@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "214159267752",
+    "firebase_url": "https://passthebomb-8b078.firebaseio.com",
+    "project_id": "passthebomb-8b078",
+    "storage_bucket": "passthebomb-8b078.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214159267752:android:69d580694a01672a",
+        "android_client_info": {
+          "package_name": "com.thrane.simon.passthebomb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "214159267752-lqmd99v415shcgip4u0l98e6nn5ud3st.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thrane.simon.passthebomb",
+            "certificate_hash": "ca632b1634aad3365074a20be5a2f79c74d1e8f4"
+          }
+        },
+        {
+          "client_id": "214159267752-ta8q2e5qfbrfhkqipmo7ekncqdjkomds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbG-puZBkhbZ2YYVWqcZ0sFC-6-i1xtQQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "214159267752-ta8q2e5qfbrfhkqipmo7ekncqdjkomds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

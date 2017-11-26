@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUI(GoogleSignInAccount account) {
-        Intent LobbyListIntent = new Intent(getBaseContext(), LobbyListActivity.class);
+        Intent LobbyListIntent = new Intent(getBaseContext(), StartMenuActivity.class);
         LobbyListIntent.putExtra("UserAccount", account);
         startActivity(LobbyListIntent);
     }

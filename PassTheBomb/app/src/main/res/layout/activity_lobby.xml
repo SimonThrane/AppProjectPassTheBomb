@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.thrane.simon.passthebomb.StartMenuActivity">
+    tools:context="com.thrane.simon.passthebomb.LobbyActivity">
 
 </android.support.constraint.ConstraintLayout>

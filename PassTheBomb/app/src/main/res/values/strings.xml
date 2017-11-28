@@ -2,4 +2,12 @@
     <string name="app_name">PassTheBomb</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_in_with_facebook">Sign In With Facebook</string>
+    <string name="back">Back</string>
+    <string name="open_lobby">Open Lobby</string>
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
+    <string name="config_game_lobby">Configure game lobby</string>
+    <string name="trivia_category">Trivia category</string>
+    <string name="trivia_difficulty">Trivia difficulty</string>
 </resources>

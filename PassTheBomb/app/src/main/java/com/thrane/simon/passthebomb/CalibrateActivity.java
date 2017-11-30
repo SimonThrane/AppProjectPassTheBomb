@@ -10,7 +10,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.thrane.simon.passthebomb.Models.User;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CalibrateActivity extends AppCompatActivity {
 
@@ -23,6 +27,10 @@ public class CalibrateActivity extends AppCompatActivity {
     private Sensor accSensor;
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
+    private int totalNumberOfUsers;
+    private int numberOfUsersNotCalibrated;
+    private ArrayList<User> users;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +55,30 @@ public class CalibrateActivity extends AppCompatActivity {
         });
 
         fetchPlayers();
+
+    }
+
+    private ArrayList<User> getUsers() {
+        //Mock users
+        ArrayList<User> list = new ArrayList<>();
+        User user1 = new User();
+        user1.id = "1";
+        user1.name = "Kasper";
+        User user2 = new User();
+        user2.id = "1";
+        user1.name = "Jeppe";
+        User user3 = new User();
+        user3.id = "1";
+        user1.name = "Simon";
+        list.add(user1);
+        list.add(user2);
+        list.add(user3);
+        return list;
     }
 
     private void done() {
+        //Get rotation angles based on euler angles: https://stackoverflow.com/questions/8905000/android-axes-vectors-from-orientation-rotational-angles
+        //We are only interested in alpha
         sensorManager.getRotationMatrix(rotationMatrix, null,
                 calibrationHelper.accelerometerReading, calibrationHelper.magnetometerReading);
 
@@ -65,7 +94,23 @@ public class CalibrateActivity extends AppCompatActivity {
         sensorManager.registerListener(calibrationHelper, accSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
-    private void fetchPlayers() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(calibrationHelper);
+    }
 
+    private void fetchPlayers() {
+        users = getUsers();
+
+        totalNumberOfUsers = users.size();
+        numberOfUsersNotCalibrated = totalNumberOfUsers;
+
+    }
+
+    private void showUser(User user) {
+        currentUser = user;
+        descriptionTxt.setText(R.string.calibrate_activity_description + " " + user.name);
+        //Set image with user image
     }
 }

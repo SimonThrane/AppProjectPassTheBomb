@@ -63,13 +63,13 @@ public class LobbyAdapter extends BaseAdapter {
         if(gameDataItem!=null){
             //set the properties from weatherDataItem
             TextView txtLobbyName = convertView.findViewById(R.id.tvLobbyName);
-            txtLobbyName.setText(gameDataItem.Name);
+            txtLobbyName.setText(gameDataItem.name);
 
             TextView txtHostName = convertView.findViewById(R.id.tvHostName);
             //txtHostName.setText(Integer.toString(gameDataItem.Host.Name));
 
             TextView txtPlayerNum = convertView.findViewById(R.id.tvPlayerNum);
-            txtPlayerNum.setText(Double.toString(gameDataItem.Users.size()));
+            txtPlayerNum.setText(Double.toString(gameDataItem.users.size()));
 
         }
         return convertView;

@@ -5,4 +5,5 @@ package com.thrane.simon.passthebomb.Models;
  */
 
 public class User {
+    public String name;
 }

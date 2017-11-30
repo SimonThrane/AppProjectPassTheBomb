@@ -4,52 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.thrane.simon.passthebomb.CreateLobbyActivity">
+    tools:context="com.thrane.simon.passthebomb.CreateLobbyActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btnBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/back"
+        android:text="@string/create_lobby_back"
         tools:layout_editor_absoluteX="45dp"
         tools:layout_editor_absoluteY="427dp" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/btnOpenLobby"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/open_lobby"
-        tools:layout_editor_absoluteX="239dp"
+        android:text="@string/create_lobby_open_lobby"
+        tools:layout_editor_absoluteX="241dp"
         tools:layout_editor_absoluteY="427dp" />
 
     <RadioGroup
         android:id="@+id/rgDifficulty"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="31dp"
         android:orientation="horizontal"
         tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="272dp">
+        tools:layout_editor_absoluteY="367dp">
 
         <RadioButton
             android:id="@+id/rbEasy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/easy" />
+            android:text="@string/create_lobby_easy" />
 
         <RadioButton
             android:id="@+id/rbMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/medium" />
+            android:text="@string/create_lobby_medium" />
 
         <RadioButton
             android:id="@+id/rbHard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/hard"
+            android:text="@string/create_lobby_hard"
             tools:layout_editor_absoluteX="89dp"
             tools:layout_editor_absoluteY="151dp" />
     </RadioGroup>
@@ -58,8 +59,9 @@
         android:id="@+id/tvConfigGameLobby"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/config_game_lobby"
+        android:text="@string/create_lobby_config_game_settings"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textSize="24sp"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp" />
 
@@ -67,27 +69,46 @@
         android:id="@+id/tvDifficulty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/trivia_difficulty"
+        android:text="@string/create_lobby_trivia_difficulty"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textStyle="bold"
         tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="246dp" />
+        tools:layout_editor_absoluteY="342dp" />
 
     <TextView
         android:id="@+id/tvCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/trivia_category"
+        android:text="@string/create_lobby_trivia_category"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textStyle="bold"
         tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="157dp" />
+        tools:layout_editor_absoluteY="246dp" />
 
     <NumberPicker
         android:id="@+id/nbCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="146dp"
-        tools:layout_editor_absoluteY="77dp" />
+        tools:layout_editor_absoluteX="284dp"
+        tools:layout_editor_absoluteY="165dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_lobby_game_name"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="83dp" />
+
+    <EditText
+        android:id="@+id/edtGameName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        tools:layout_editor_absoluteX="123dp"
+        tools:layout_editor_absoluteY="66dp" />
 
 </android.support.constraint.ConstraintLayout>

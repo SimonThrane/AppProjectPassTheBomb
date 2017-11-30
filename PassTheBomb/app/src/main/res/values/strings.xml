@@ -2,6 +2,8 @@
     <string name="app_name">PassTheBomb</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_in_with_facebook">Sign In With Facebook</string>
+    <string name="create_lobby">Create Lobby</string>
+    <string name="join_lobby">Join Lobby</string>
     <string name="back">Back</string>
     <string name="open_lobby">Open Lobby</string>
     <string name="easy">Easy</string>

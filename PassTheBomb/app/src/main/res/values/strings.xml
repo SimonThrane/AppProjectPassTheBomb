@@ -4,6 +4,15 @@
     <string name="sign_in_with_facebook">Sign In With Facebook</string>
     <string name="create_lobby">Create Lobby</string>
     <string name="join_lobby">Join Lobby</string>
+    <string name="create_lobby_back">Back</string>
+    <string name="create_lobby_open_lobby">Open Lobby</string>
+    <string name="create_lobby_easy">Easy</string>
+    <string name="create_lobby_medium">Medium</string>
+    <string name="create_lobby_hard">Hard</string>
+    <string name="create_lobby_config_game_settings">Configure game settings</string>
+    <string name="create_lobby_trivia_category">Trivia category</string>
+    <string name="create_lobby_trivia_difficulty">Trivia difficulty</string>
+    <string name="create_lobby_game_name">Game name</string>
     <string name="calibrate_activity_done">Done</string>
     <string name="calibrate_activity_description">Point at</string>
 </resources>

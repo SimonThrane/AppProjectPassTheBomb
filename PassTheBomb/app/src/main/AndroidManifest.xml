@@ -24,12 +24,16 @@
         <activity android:name=".CreateLobbyActivity" />
         <activity android:name=".LobbyActivity" />
 
-        <activity android:name=".GameActivity" />
+        <activity
+            android:name=".GameActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".ResultActivity" />
         <activity android:name=".JoinLobbyActivity" />
         <activity
             android:name=".CalibrateActivity"
             android:screenOrientation="portrait">
+
         </activity>
 
         <service

@@ -1,6 +1,7 @@
 package com.thrane.simon.passthebomb;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "FIREBASE_AUTH";
@@ -94,8 +96,17 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI(GoogleSignInAccount account) {
         Intent LobbyListIntent = new Intent(getBaseContext(), StartMenuActivity.class);
+        saveUsernameToSharedPreference(account.getDisplayName());
         LobbyListIntent.putExtra("UserAccount", account);
         startActivity(LobbyListIntent);
+    }
+//https://stackoverflow.com/questions/7145606/how-android-sharedpreferences-save-store-object
+    private void saveUsernameToSharedPreference(String name){
+        SharedPreferences mPrefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = mPrefs.edit();
+        prefsEditor.putString("UserName", name);
+        prefsEditor.commit();
+
     }
 
 

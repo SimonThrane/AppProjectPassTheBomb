@@ -54,9 +54,9 @@ public class LobbyAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         //we only need to create the views once, if not null we will reuse the existing view and update its values
         if (convertView == null) {
-            LayoutInflater weatherInflater = (LayoutInflater) this.context
+            LayoutInflater gameInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = weatherInflater.inflate(R.layout.lobby_list_item, null);
+            convertView = gameInflater.inflate(R.layout.lobby_list_item, null);
         }
 
         gameDataItem = getItem(position);

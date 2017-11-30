@@ -38,13 +38,13 @@ public class StartMenuActivity extends AppCompatActivity {
             @Override
             protected void populateView(View v, Game gameDataItem, int position) {
                 TextView txtLobbyName = v.findViewById(R.id.tvLobbyName);
-                txtLobbyName.setText(gameDataItem.Name);
+                txtLobbyName.setText(gameDataItem.name);
 
                 //TextView txtHostName = v.findViewById(R.id.tvHostName);
                 //txtHostName.setText(Integer.toString(gameDataItem.Host.Name));
 
                 TextView txtPlayerNum = v.findViewById(R.id.tvPlayerNum);
-                txtPlayerNum.setText(Double.toString(gameDataItem.Users.size()));
+                txtPlayerNum.setText(Double.toString(gameDataItem.users.size()));
 
             }
         };

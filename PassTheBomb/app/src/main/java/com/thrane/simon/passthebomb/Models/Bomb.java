@@ -5,4 +5,6 @@ package com.thrane.simon.passthebomb.Models;
  */
 
 public class Bomb {
+    public int timeToLive;
+    public User user;
 }

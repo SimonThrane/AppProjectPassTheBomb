@@ -1,15 +1,16 @@
 package com.thrane.simon.passthebomb.Models;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Søren on 26-11-2017.
  */
 
 public class Game {
-    public String password;
-    public boolean isPrivate;
-    public ArrayList<User> players;
-
+    public List<User> Users;
+    public User Host;
+    public Boolean isPublic;
+    public Category Category;
+    public String Name;
 
 }

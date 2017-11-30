@@ -6,4 +6,43 @@
     android:layout_height="match_parent"
     tools:context="com.thrane.simon.passthebomb.StartMenuActivity">
 
+    <Button
+        android:id="@+id/createBtn"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="72dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/create_lobby"
+        app:layout_constraintEnd_toStartOf="@+id/joinLobbyBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listVievLobby"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="72dp" />
+
+    <Button
+        android:id="@+id/joinLobbyBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="39dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/join_lobby"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/createBtn"
+        app:layout_constraintTop_toBottomOf="@+id/listVievLobby"
+        android:layout_marginRight="16dp" />
+
+    <ListView
+        android:id="@+id/listVievLobby"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/joinLobbyBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

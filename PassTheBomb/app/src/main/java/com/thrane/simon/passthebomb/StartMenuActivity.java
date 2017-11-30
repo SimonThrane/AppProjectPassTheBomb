@@ -3,6 +3,7 @@ package com.thrane.simon.passthebomb;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,7 +20,7 @@ public class StartMenuActivity extends AppCompatActivity {
     private FirebaseListAdapter<Game> gameAdapter;
     private FirebaseDatabase database;
     private DatabaseReference mRef;
-    FirebaseListOptions<Game> options;
+    private FirebaseListOptions<Game> options;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +30,10 @@ public class StartMenuActivity extends AppCompatActivity {
         mRef = database.getReference("Games");
         Query query = mRef.limitToLast(50);
         options = new FirebaseListOptions.Builder<Game>()
+                .setLayout(R.layout.lobby_list_item)
                 .setQuery(query, Game.class)
                 .build();
+        //
         gameAdapter = new FirebaseListAdapter<Game>(options) {
             @Override
             protected void populateView(View v, Game gameDataItem, int position) {
@@ -47,5 +50,17 @@ public class StartMenuActivity extends AppCompatActivity {
         };
         final ListView lv = (ListView) findViewById(R.id.listVievLobby);
         lv.setAdapter(gameAdapter);
+
+        //https://stackoverflow.com/questions/18405299/onitemclicklistener-using-arrayadapter-for-listview
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3)
+            {
+                String Id = (String)adapter.getItemAtPosition(position);
+                // assuming string and if you want to get the value on click of list item
+                // do what you intend to do on click of listview row
+            }
+        });
     }
 }

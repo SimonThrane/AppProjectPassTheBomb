@@ -26,11 +26,15 @@
         <activity android:name=".GameActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".JoinLobbyActivity" />
+        <activity
+            android:name=".CalibrateActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
         <service
             android:name=".Services.QuestionService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
     </application>
 
 </manifest>

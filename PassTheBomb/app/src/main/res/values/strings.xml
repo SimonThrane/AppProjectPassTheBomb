@@ -4,4 +4,6 @@
     <string name="sign_in_with_facebook">Sign In With Facebook</string>
     <string name="create_lobby">Create Lobby</string>
     <string name="join_lobby">Join Lobby</string>
+    <string name="calibrate_activity_done">Done</string>
+    <string name="calibrate_activity_description">Point at</string>
 </resources>

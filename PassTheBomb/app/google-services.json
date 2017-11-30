@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "214159267752-2qr0uaae1to143qjrp8nqerauat73ohu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thrane.simon.passthebomb",
+            "certificate_hash": "c902a2b29a95cd80c98959804dfb84602d36423d"
+          }
+        },
+        {
           "client_id": "214159267752-lqmd99v415shcgip4u0l98e6nn5ud3st.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

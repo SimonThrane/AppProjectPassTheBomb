@@ -7,10 +7,11 @@ import java.util.List;
  */
 
 public class Game {
-    public List<User> Users;
-    public User Host;
+    public List<User> users;
+    public User host;
     public Boolean isPublic;
-    public Category Category;
-    public String Name;
-
+    public Category category;
+    public String name;
+    public String difficulty;
+    public String password;
 }

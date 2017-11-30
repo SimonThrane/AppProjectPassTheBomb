@@ -2,4 +2,6 @@
     <string name="app_name">PassTheBomb</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_in_with_facebook">Sign In With Facebook</string>
+    <string name="calibrate_activity_done">Done</string>
+    <string name="calibrate_activity_description">Point at</string>
 </resources>

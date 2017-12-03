@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
 
 import com.thrane.simon.passthebomb.Models.User;
+import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.util.ArrayList;
 
@@ -50,7 +51,7 @@ public class GameActivity extends AppCompatActivity {
         //Setup view
         //Get the users example
         Intent intent = getIntent();
-        ArrayList<User> users = intent.getParcelableArrayListExtra("CALIBRATED_USERS");
+        ArrayList<User> users = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
         //Get the users example
 
         bombImageView = (ImageView)findViewById(R.id.bombImageView);

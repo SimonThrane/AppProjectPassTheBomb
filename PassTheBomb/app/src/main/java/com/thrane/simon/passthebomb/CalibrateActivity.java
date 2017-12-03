@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.thrane.simon.passthebomb.Models.User;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
+import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +102,7 @@ public class CalibrateActivity extends AppCompatActivity {
             Log.d("DONE CALIBRATING","numberOfUsersNotCalibrated " + numberOfUsersNotCalibrated + ". Now starting game...");
             Intent gameIntent = new Intent(this, GameActivity.class);
             //TODO: Don't use magic string here
-            gameIntent.putParcelableArrayListExtra("CALIBRATED_USERS",users);
+            gameIntent.putParcelableArrayListExtra(Globals.CALIBRATED_USERS,users);
             startActivity(gameIntent);
         }
     }

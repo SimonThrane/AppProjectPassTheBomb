@@ -3,6 +3,7 @@ package com.thrane.simon.passthebomb;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,11 +12,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.thrane.simon.passthebomb.Models.User;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
 import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CalibrateActivity extends AppCompatActivity {
@@ -33,6 +41,8 @@ public class CalibrateActivity extends AppCompatActivity {
     private int numberOfUsersNotCalibrated;
     private ArrayList<User> users;
     private User currentUser;
+    private FirebaseDatabase database;
+    private DatabaseReference gameRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +66,20 @@ public class CalibrateActivity extends AppCompatActivity {
             }
         });
 
-        fetchPlayers();
+        database = FirebaseDatabase.getInstance();
+        gameRef = database.getReference("Games/-L-CLhm9X9R6xo9mqSzT/users");
+        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fetchPlayers(dataSnapshot);
+                showUser(currentUser);
+            }
 
-        //Show first user
-        showUser(currentUser);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private ArrayList<User> getUsers() {
@@ -101,7 +121,6 @@ public class CalibrateActivity extends AppCompatActivity {
         } else {
             Log.d("DONE CALIBRATING","numberOfUsersNotCalibrated " + numberOfUsersNotCalibrated + ". Now starting game...");
             Intent gameIntent = new Intent(this, GameActivity.class);
-            //TODO: Don't use magic string here
             gameIntent.putParcelableArrayListExtra(Globals.CALIBRATED_USERS,users);
             startActivity(gameIntent);
         }
@@ -120,8 +139,17 @@ public class CalibrateActivity extends AppCompatActivity {
         sensorManager.unregisterListener(calibrationHelper);
     }
 
-    private void fetchPlayers() {
-        users = getUsers();
+    private void fetchPlayers(DataSnapshot dataSnapshot) {
+        ArrayList<User> firebaseUsers = new ArrayList<>();
+        for(DataSnapshot snap : dataSnapshot.getChildren()) {
+            HashMap<Integer, String> userHash = (HashMap<Integer, String>) snap.getValue();
+            User user = new User();
+            user.name = userHash.get("name");
+            user.id = userHash.get("id");
+            firebaseUsers.add(user);
+        }
+
+        users = firebaseUsers;
 
         totalNumberOfUsers = users.size();
         numberOfUsersNotCalibrated = totalNumberOfUsers;

@@ -1,5 +1,6 @@
 package com.thrane.simon.passthebomb;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +57,8 @@ public class CalibrateActivity extends AppCompatActivity {
 
         fetchPlayers();
 
+        //Show first user
+        showUser(currentUser);
     }
 
     private ArrayList<User> getUsers() {
@@ -66,10 +69,10 @@ public class CalibrateActivity extends AppCompatActivity {
         user1.name = "Kasper";
         User user2 = new User();
         user2.id = "1";
-        user1.name = "Jeppe";
+        user2.name = "Jeppe";
         User user3 = new User();
         user3.id = "1";
-        user1.name = "Simon";
+        user3.name = "Simon";
         list.add(user1);
         list.add(user2);
         list.add(user3);
@@ -84,7 +87,23 @@ public class CalibrateActivity extends AppCompatActivity {
 
         sensorManager.getOrientation(rotationMatrix, orientationAngles);
 
+        //Log all angles
         Log.d("TAG", "alpha: " +  orientationAngles[0] + " beta: " + orientationAngles[1] + " gamma: " + orientationAngles[2]);
+
+        //Save alpha on current user
+        currentUser.angleAlpha = orientationAngles[0];
+
+        //If more users show next
+        if(--numberOfUsersNotCalibrated > 0) {
+            currentUser = users.get(numberOfUsersNotCalibrated-1);
+            showUser(currentUser);
+        } else {
+            Log.d("DONE CALIBRATING","numberOfUsersNotCalibrated " + numberOfUsersNotCalibrated + ". Now starting game...");
+            Intent gameIntent = new Intent(this, GameActivity.class);
+            //TODO: Don't use magic string here
+            gameIntent.putParcelableArrayListExtra("CALIBRATED_USERS",users);
+            startActivity(gameIntent);
+        }
     }
 
     @Override
@@ -105,12 +124,14 @@ public class CalibrateActivity extends AppCompatActivity {
 
         totalNumberOfUsers = users.size();
         numberOfUsersNotCalibrated = totalNumberOfUsers;
+        //Start from top to bottom
+        currentUser = users.get(totalNumberOfUsers-1);
 
     }
 
     private void showUser(User user) {
-        currentUser = user;
-        descriptionTxt.setText(R.string.calibrate_activity_description + " " + user.name);
+        String descriptionString = getResources().getString(R.string.calibrate_activity_description) + " " + user.name;
+        descriptionTxt.setText(descriptionString);
         //Set image with user image
     }
 }

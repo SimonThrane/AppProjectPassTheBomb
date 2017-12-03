@@ -1,6 +1,7 @@
 package com.thrane.simon.passthebomb;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,10 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
+import com.thrane.simon.passthebomb.Models.User;
+
+import java.util.ArrayList;
+
 public class GameActivity extends AppCompatActivity {
 
     ImageView bombImageView;
@@ -20,6 +25,11 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        //Get the users example
+        Intent intent = getIntent();
+        ArrayList<User> users = intent.getParcelableArrayListExtra("CALIBRATED_USERS");
+        //Get the users example
 
         bombImageView = (ImageView)findViewById(R.id.bombImageView);
         bombImageView.setImageResource(R.drawable.bomb);

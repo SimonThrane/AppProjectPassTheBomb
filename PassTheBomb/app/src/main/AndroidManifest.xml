@@ -24,9 +24,9 @@
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".ResultActivity" />
-        <activity android:name=".JoinLobbyActivity" />
+        <!--<activity android:name=".JoinLobbyActivity" />-->
         <activity
-            android:name=".CalibrateActivity"
+            android:name=".JoinLobbyActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

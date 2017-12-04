@@ -1,5 +1,6 @@
 package com.thrane.simon.passthebomb;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,8 +34,6 @@ public class JoinLobbyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_lobby);
 
-
-
         btnBack = findViewById(R.id.btnBack);
         btnJoin = findViewById(R.id.btnJoin);
         edtPassword = findViewById(R.id.edtPassword);
@@ -50,6 +49,13 @@ public class JoinLobbyActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         gamesRef = database.getReference("Games");
         sharedPref = getSharedPreferences(null, MODE_PRIVATE);
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     // inspired from https://stackoverflow.com/a/40367515
@@ -68,6 +74,10 @@ public class JoinLobbyActivity extends AppCompatActivity {
                         currentUser.name = sharedPref.getString("UserName", null);
                         users.add(currentUser);
                         gamesRef.child(key).child("users").setValue(users);
+
+                        Intent intent = new Intent(getBaseContext(), LobbyActivity.class);
+                        intent.putExtra("GameKey", key);
+                        startActivity(intent);
                         break;
                     }
                 }

@@ -5,5 +5,8 @@ package com.thrane.simon.passthebomb.Models;
  */
 
 public class User {
+    public User() {
+        // Default constructor required for calls to DataSnapshot.getValue(Game.class)
+    }
     public String name;
 }

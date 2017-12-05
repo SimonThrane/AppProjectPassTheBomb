@@ -7,6 +7,10 @@ import java.util.ArrayList;
  */
 
 public class Question {
+
+    public Question() {
+        // Default constructor required for calls to DataSnapshot.getValue(Game.class)
+    }
     public String category;
     public String question;
     public String correctAnswer;

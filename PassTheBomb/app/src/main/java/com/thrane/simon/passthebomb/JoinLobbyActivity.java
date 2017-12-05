@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.thrane.simon.passthebomb.Models.Game;
 import com.thrane.simon.passthebomb.Models.User;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class JoinLobbyActivity extends AppCompatActivity {
@@ -64,14 +65,15 @@ public class JoinLobbyActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Game currentGame = snapshot.getValue(Game.class);
+                    //Game currentGame = snapshot.getValue(Game.class);
+                    HashMap<Integer, String> gameHash = (HashMap<Integer, String>) snapshot.getValue();
                     // if a game with the password is found, add the user to the lobby
-                    if(currentGame.password.equals(password)) {
-                        Log.d("asdf","asdf");
+                    if(gameHash.get("password").equals(password)) {
                         String key = snapshot.getKey();
                         List<User> users = snapshot.getValue(Game.class).users;
                         User currentUser = new User();
                         currentUser.name = sharedPref.getString("UserName", null);
+                        if(currentUser.name == null) currentUser.name = "Unknown user";
                         users.add(currentUser);
                         gamesRef.child(key).child("users").setValue(users);
 

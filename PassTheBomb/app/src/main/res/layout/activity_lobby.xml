@@ -6,4 +6,86 @@
     android:layout_height="match_parent"
     tools:context="com.thrane.simon.passthebomb.LobbyActivity">
 
+    <TextView
+        android:id="@+id/txtGameName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtGameSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="11dp"
+        android:text="@string/lobby_game_settings"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txtTriviaCategoryTitle"
+        app:layout_constraintTop_toBottomOf="@+id/txtGameName" />
+
+    <TextView
+        android:id="@+id/txtTriviaCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="19dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/txtTriviaCategoryTitle"
+        app:layout_constraintTop_toTopOf="@+id/txtTriviaCategoryTitle" />
+
+    <TextView
+        android:id="@+id/txtTriviaCategoryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/lobby_trivia_category"
+        app:layout_constraintStart_toStartOf="@+id/txtTriviaDifficultyTitle"
+        app:layout_constraintTop_toBottomOf="@+id/txtGameSettings" />
+
+    <TextView
+        android:id="@+id/txtTriviaDifficultyTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:text="@string/lobby_trivia_difficulty"
+        app:layout_constraintEnd_toEndOf="@+id/txtPlayers"
+        app:layout_constraintStart_toEndOf="@+id/txtPlayers"
+        app:layout_constraintTop_toBottomOf="@+id/txtTriviaCategoryTitle" />
+
+    <TextView
+        android:id="@+id/txtTriviaDifficulty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="1dp"
+        android:layout_marginTop="7dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/txtTriviaCategory"
+        app:layout_constraintTop_toBottomOf="@+id/txtTriviaCategory" />
+
+    <TextView
+        android:id="@+id/txtPlayers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="14dp"
+        android:text="@string/lobby_players"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/lvPlayers"
+        app:layout_constraintTop_toBottomOf="@+id/txtTriviaDifficultyTitle" />
+
+    <ListView
+        android:id="@+id/lvPlayers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtPlayers" />
 </android.support.constraint.ConstraintLayout>

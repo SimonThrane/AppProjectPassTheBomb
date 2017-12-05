@@ -145,7 +145,7 @@ public class CalibrateActivity extends AppCompatActivity {
             HashMap<Integer, String> userHash = (HashMap<Integer, String>) snap.getValue();
             User user = new User();
             user.name = userHash.get("name");
-            user.id = userHash.get("id");
+            user.id = snap.getKey();
             firebaseUsers.add(user);
         }
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -20,10 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CreateLobbyActivity extends AppCompatActivity {
-    NumberPicker nbCategory;
-    Button btnBack;
-    Button btnOpenLobby;
-    RadioGroup rgDifficulty;
+    private NumberPicker nbCategory;
+    private Button btnBack;
+    private Button btnOpenLobby;
+    private RadioGroup rgDifficulty;
+    private EditText edtGameName;
 
     private FirebaseDatabase database;
     private DatabaseReference gamesRef;
@@ -44,6 +46,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
                 onBtnOpenLobbyClicked();
             }
         });
+        edtGameName = findViewById(R.id.edtGameName);
 
         rgDifficulty = findViewById(R.id.rgDifficulty);
 
@@ -73,6 +76,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
         game.users = new ArrayList<>();
         game.users.add(user);
         game.password =  generatePassword();
+        game.name = edtGameName.getText().toString();
 
         gamesRef.push().setValue(game);
     }

@@ -67,7 +67,7 @@ public class CalibrateActivity extends AppCompatActivity {
         });
 
         database = FirebaseDatabase.getInstance();
-        gameRef = database.getReference("Games/-L-CLhm9X9R6xo9mqSzT/users");
+        gameRef = database.getReference("Games/-L-b3NT-mBKMzv7Z9NFf/users");
         gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -26,6 +26,10 @@
         <activity android:name=".ResultActivity" />
         <activity android:name=".JoinLobbyActivity" />
         <activity
+            android:name=".CalibrateActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
             android:name=".CreateLobbyActivity"
             android:screenOrientation="portrait">
             <intent-filter>

@@ -16,19 +16,32 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.thrane.simon.passthebomb.Models.Game;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
 
 import com.thrane.simon.passthebomb.Models.User;
 import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+
+import static java.lang.Math.abs;
 
 public class GameActivity extends AppCompatActivity {
 
     ImageView bombImageView;
     MediaPlayer mediaPlayer;
     TextView txt;
+    ArrayList<User> calibratedUsers= new ArrayList<User>();
 
+    private FirebaseDatabase database;
+    private DatabaseReference gamesRef;
 
     private SensorManager sensorManager;
     private Sensor magSensor;
@@ -36,11 +49,45 @@ public class GameActivity extends AppCompatActivity {
     private Sensor accSensor;
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
+    private User phoneUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        //Get Intent from calibration
+        Intent intent = getIntent();
+        calibratedUsers = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
+        database = FirebaseDatabase.getInstance();
+
+        //TODO: Get phoneUser from sharedPrefs
+        phoneUser = calibratedUsers.get(0);
+
+        gamesRef = database.getReference("Games/-L-b3NT-mBKMzv7Z9NFf/users/"+ phoneUser.id);
+
+
+        gamesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //TODO: update phoneUser
+                User user = dataSnapshot.getValue(User.class);
+                phoneUser.hasBomb = user.hasBomb;
+
+                if(!phoneUser.hasBomb){
+                    bombImageView.setVisibility(View.INVISIBLE);
+                }else{
+                    bombImageView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+
 
         //Set up for Calibration
         calibrationHelper = new CalibrationHelper();
@@ -49,16 +96,8 @@ public class GameActivity extends AppCompatActivity {
         accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         //Setup view
-        //Get the users example
-        Intent intent = getIntent();
-        ArrayList<User> users = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
-        //Get the users example
-
         bombImageView = (ImageView)findViewById(R.id.bombImageView);
         bombImageView.setImageResource(R.drawable.bomb);
-
-        txt = (TextView)findViewById(R.id.testView);
-
 
         //Setup listener
         bombImageView.setOnTouchListener(new OnBombTouchListener());
@@ -66,6 +105,7 @@ public class GameActivity extends AppCompatActivity {
         //Setup Mediaplayer
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.isis_theme_song);
         mediaPlayer.start();
+        passBombToRandomUser();
 
     }
 
@@ -83,6 +123,31 @@ public class GameActivity extends AppCompatActivity {
         mediaPlayer.stop();
         mediaPlayer.release();
 
+    }
+
+    //The host pass the bomb to a random user
+    private void passBombToRandomUser(){
+        //if(phoneUser == game.host) {
+            Random randomizer = new Random();
+            User randomUser = calibratedUsers.get(randomizer.nextInt(calibratedUsers.size()));
+            gamesRef.getParent().child(randomUser.id).child("hasBomb").setValue(true);
+        //}
+    }
+
+    private void calculateNearestUser(float coor){
+        User nearestUser = calibratedUsers.get(0);
+        for(User user : calibratedUsers){
+            if(abs(user.angleAlpha-coor) < abs(nearestUser.angleAlpha-coor)){
+                nearestUser = user;
+            }
+        }
+        passBombToPlayer(nearestUser);
+    }
+
+    //Pass the bomb, and
+    private void passBombToPlayer(User user){
+        gamesRef.getParent().child(user.id).child("hasBomb").setValue(true);
+        gamesRef.getParent().child(phoneUser.id).child("hasBomb").setValue(false);
     }
 
     //Listing on bomb touch
@@ -132,17 +197,19 @@ public class GameActivity extends AppCompatActivity {
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            //Get the current Aplhe
+                            //TODO: fix animation
+                            bombImageView.setVisibility(View.INVISIBLE);
+                            //Get the current Aplha
                             sensorManager.getRotationMatrix(rotationMatrix, null,
                                     calibrationHelper.accelerometerReading, calibrationHelper.magnetometerReading);
 
                             sensorManager.getOrientation(rotationMatrix, orientationAngles);
-                            txt.setText("Aplha: "+orientationAngles[0]);
+                            //Calulate and update who have the bomb
+                            calculateNearestUser(orientationAngles[0]);
                         }
 
                         @Override
                         public void onAnimationRepeat(Animation animation) {
-
                         }
                     });
                 }

@@ -61,7 +61,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
         Game game = new Game();
 
         // set category from the numberPickers current value
-        game.category = Category.values()[nbCategory.getValue()];
+        //game.category = Category.values()[nbCategory.getValue()];
 
         //set difficulty from selected radio button
         RadioButton selectedRb = findViewById(rgDifficulty.getCheckedRadioButtonId());

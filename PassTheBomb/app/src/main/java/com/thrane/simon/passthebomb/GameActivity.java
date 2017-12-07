@@ -3,6 +3,7 @@ package com.thrane.simon.passthebomb;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
+
+import com.thrane.simon.passthebomb.Models.User;
+import com.thrane.simon.passthebomb.Util.Globals;
+
+import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -43,6 +49,11 @@ public class GameActivity extends AppCompatActivity {
         accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         //Setup view
+        //Get the users example
+        Intent intent = getIntent();
+        ArrayList<User> users = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
+        //Get the users example
+
         bombImageView = (ImageView)findViewById(R.id.bombImageView);
         bombImageView.setImageResource(R.drawable.bomb);
 

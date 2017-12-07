@@ -18,7 +18,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.thrane.simon.passthebomb.Models.Game;
 
 //Inspired by https://github.com/firebase/FirebaseUI-Android/blob/master/app/src/main/java/com/firebase/uidemo/database/realtime/RealtimeDbChatActivity.java
@@ -31,6 +30,7 @@ public class StartMenuActivity extends AppCompatActivity {
     private Game selectedGame;
     private Button createLobbyBtn;
     private Button joinLobbyBtn;
+    private ListView lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class StartMenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lobby_list);
         database = FirebaseDatabase.getInstance();
         mRef = database.getReference("Games");
-        Query query = mRef.limitToLast(5);
+        Query query = mRef;
         options = new FirebaseListOptions.Builder<Game>()
                 .setLayout(R.layout.lobby_list_item)
                 .setQuery(query, Game.class)
@@ -57,7 +57,7 @@ public class StartMenuActivity extends AppCompatActivity {
         joinLobbyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectedGame != null){
+                if (selectedGame != null) {
                     Intent LobbyIntent = new Intent(getBaseContext(), LobbyActivity.class);
                     startActivity(LobbyIntent);
                 }
@@ -70,55 +70,43 @@ public class StartMenuActivity extends AppCompatActivity {
                 txtLobbyName.setText(gameDataItem.name);
 
                 TextView txtHostName = v.findViewById(R.id.tvHostName);
-                //txtHostName.setText(Integer.toString(gameDataItem.Host));
+                txtHostName.setText(gameDataItem.host.name);
 
                 TextView txtPlayerNum = v.findViewById(R.id.tvPlayerNum);
-                txtPlayerNum.setText(Double.toString(gameDataItem.users.size()));
+                txtPlayerNum.setText(String.valueOf(gameDataItem.users.size()));
 
+                TextView txtCategory = v.findViewById(R.id.tvCategoryValue);
+                txtCategory.setText(gameDataItem.category);
             }
         };
-        final ListView lv = (ListView) findViewById(R.id.listVievLobby);
+        lv = findViewById(R.id.listViewLobby);
+        gameAdapter.startListening();
+        lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         lv.setAdapter(gameAdapter);
 
         //https://stackoverflow.com/questions/18405299/onitemclicklistener-using-arrayadapter-for-listview
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3)
-            {
+            public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3) {
                 selectedGame = (Game) adapter.getItemAtPosition(position);
+                v.setSelected(true);
             }
         });
 
-        mRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Game value = dataSnapshot.getValue(Game.class);
-                Log.d(TAG, "Value is: " + value.name);
-            }
+    }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        gameAdapter.startListening();
 
-            }
+    }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        gameAdapter.stopListening();
 
     }
 }

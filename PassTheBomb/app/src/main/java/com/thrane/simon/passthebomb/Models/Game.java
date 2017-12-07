@@ -5,14 +5,14 @@ import java.util.List;
 /**
  * Created by Søren on 26-11-2017.
  */
-
 public class Game {
 
     public Game() {
         // Default constructor required for calls to DataSnapshot.getValue(Game.class)
+
     }
 
-    public Game( List<User> users, User host, Boolean isPublic, Category category, String name, String difficulty, String password) {
+    public Game( List<User> users, User host, Boolean isPublic, String category, String name, String difficulty, String password) {
         this.users = users;
         this.host = host;
         this.isPublic = isPublic;
@@ -25,8 +25,10 @@ public class Game {
     public List<User> users;
     public User host;
     public Boolean isPublic;
-    public Category category;
+    public String category;
     public String name;
     public String difficulty;
     public String password;
+
+
 }

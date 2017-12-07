@@ -15,4 +15,6 @@
     <string name="create_lobby_game_name">Game name</string>
     <string name="calibrate_activity_done">Done</string>
     <string name="calibrate_activity_description">Point at</string>
+    <string name="join_lobby_enter_password">Enter password</string>
+    <string name="join_lobby_join">Join</string>
 </resources>

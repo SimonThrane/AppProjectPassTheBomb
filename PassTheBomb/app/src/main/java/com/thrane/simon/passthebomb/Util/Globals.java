@@ -6,4 +6,5 @@ package com.thrane.simon.passthebomb.Util;
 
 public class Globals {
     public static final String CALIBRATED_USERS = "CALIBRATED_USERS";
+    public static final String GAME_KEY = "GAME_KEY";
 }

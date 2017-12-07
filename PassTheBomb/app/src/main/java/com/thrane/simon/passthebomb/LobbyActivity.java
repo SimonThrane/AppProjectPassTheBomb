@@ -1,16 +1,16 @@
 package com.thrane.simon.passthebomb;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,7 +28,8 @@ public class LobbyActivity extends AppCompatActivity {
     private ListView lvPlayers;
     private FirebaseDatabase database;
     private DatabaseReference gamesRef;
-    private Game mGame;
+    private SharedPreferences sharedPref;
+    private Button btnStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +40,21 @@ public class LobbyActivity extends AppCompatActivity {
         txtTriviaDifficulty = findViewById(R.id.txtTriviaDifficulty);
         txtGameName = findViewById(R.id.txtGameName);
         lvPlayers = findViewById(R.id.lvPlayers);
+        btnStart = findViewById(R.id.btnStart);
+        btnStart.setVisibility(View.GONE);
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent calibrateIntent = new Intent();
+                calibrateIntent.putExtra("GameKey", getIntent().getStringExtra("GameKey"));
+                startActivity(new Intent(getBaseContext(), CalibrateActivity.class));
+            }
+        });
 
         database = FirebaseDatabase.getInstance();
         gamesRef = database.getReference("Games");
 
-        mGame = new Game();
+        sharedPref = getSharedPreferences(null, MODE_PRIVATE);
 
         // Get game from firebase
         Intent intent = getIntent();
@@ -56,6 +67,12 @@ public class LobbyActivity extends AppCompatActivity {
                 txtTriviaCategory.setText("I'm a category");
                 txtTriviaDifficulty.setText(game.difficulty);
                 txtGameName.setText(game.name);
+
+                // Show START GAME button if this is the host
+                String currentUser = sharedPref.getString("UserName", null);
+                if(game.host.name.equals(currentUser)) {
+                    btnStart.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -64,6 +81,7 @@ public class LobbyActivity extends AppCompatActivity {
             }
         });
 
+        // Init the player list
         Query query = gamesRef.child(gameKey).child("users");
         FirebaseListOptions<User> options = new FirebaseListOptions.Builder<User>()
                 .setLayout(R.layout.player_list_item)

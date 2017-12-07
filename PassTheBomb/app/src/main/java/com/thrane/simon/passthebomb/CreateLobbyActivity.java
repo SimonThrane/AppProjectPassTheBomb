@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,6 +27,8 @@ public class CreateLobbyActivity extends AppCompatActivity {
     private Button btnOpenLobby;
     private RadioGroup rgDifficulty;
     private EditText edtGameName;
+    private Switch isPublicSwitch;
+
 
     private FirebaseDatabase database;
     private DatabaseReference gamesRef;
@@ -48,7 +51,14 @@ public class CreateLobbyActivity extends AppCompatActivity {
                 onBtnOpenLobbyClicked();
             }
         });
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         edtGameName = findViewById(R.id.edtGameName);
+        isPublicSwitch = findViewById(R.id.isPublicSwitch);
 
         rgDifficulty = findViewById(R.id.rgDifficulty);
 
@@ -86,7 +96,10 @@ public class CreateLobbyActivity extends AppCompatActivity {
         game.host = user;
         game.users = new ArrayList<>();
         game.users.add(user);
-        game.password =  generatePassword();
+        game.isPublic = isPublicSwitch.isChecked();
+        if(!game.isPublic){
+            game.password =  generatePassword();
+        }
         game.name = edtGameName.getText().toString();
 
 //        gamesRef.push().setValue(game);

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -30,12 +31,10 @@ public class LobbyActivity extends AppCompatActivity {
     private DatabaseReference gamesRef;
     private SharedPreferences sharedPref;
     private Button btnStart;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
-
         txtTriviaCategory = findViewById(R.id.txtTriviaCategory);
         txtTriviaDifficulty = findViewById(R.id.txtTriviaDifficulty);
         txtGameName = findViewById(R.id.txtGameName);
@@ -64,7 +63,7 @@ public class LobbyActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Game game = dataSnapshot.getValue(Game.class);
                 // TO DO Fix the category thing with the enum and the thing
-                txtTriviaCategory.setText("I'm a category");
+                txtTriviaCategory.setText(game.category);
                 txtTriviaDifficulty.setText(game.difficulty);
                 txtGameName.setText(game.name);
 

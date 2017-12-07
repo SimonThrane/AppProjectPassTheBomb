@@ -13,6 +13,7 @@ public class Game {
     public String name;
     public String difficulty;
     public String password;
+    public Boolean gameStarted = false;
 
     public Game() {
     }

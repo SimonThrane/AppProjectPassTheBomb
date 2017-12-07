@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,11 +46,16 @@ public class CalibrateActivity extends AppCompatActivity {
     private User currentUser;
     private FirebaseDatabase database;
     private DatabaseReference gameRef;
+    private String gameId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibrate);
+
+        //Get data from LobbyActivity
+        Intent fromLobbyIntent = getIntent();
+        gameId = fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
 
         calibrationHelper = new CalibrationHelper();
 
@@ -67,7 +75,7 @@ public class CalibrateActivity extends AppCompatActivity {
         });
 
         database = FirebaseDatabase.getInstance();
-        gameRef = database.getReference("Games/-L-b3NT-mBKMzv7Z9NFf/users");
+        gameRef = database.getReference("Games/" + gameId + "/users");
         gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -113,7 +121,15 @@ public class CalibrateActivity extends AppCompatActivity {
 
         //Save alpha on current user
         currentUser.angleAlpha = orientationAngles[0];
+        gameRef.child(currentUser.id).child("angleAlpha").setValue(currentUser.angleAlpha).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                onAngleUpdated();
+            }
+        });
+    }
 
+    private void onAngleUpdated() {
         //If more users show next
         if(--numberOfUsersNotCalibrated > 0) {
             currentUser = users.get(numberOfUsersNotCalibrated-1);
@@ -121,7 +137,7 @@ public class CalibrateActivity extends AppCompatActivity {
         } else {
             Log.d("DONE CALIBRATING","numberOfUsersNotCalibrated " + numberOfUsersNotCalibrated + ". Now starting game...");
             Intent gameIntent = new Intent(this, GameActivity.class);
-            gameIntent.putParcelableArrayListExtra(Globals.CALIBRATED_USERS,users);
+            gameIntent.putExtra(Globals.GAME_KEY,gameId);
             startActivity(gameIntent);
         }
     }

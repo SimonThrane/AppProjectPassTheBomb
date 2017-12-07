@@ -23,4 +23,6 @@
     <string name="lobby_players">Players</string>
     <string name="name">Name</string>
     <string name="lobby_start_game">Start game</string>
+    <string name="create_lobby_privacy">Privacy</string>
+    <string name="create_lobby_privacyType">Public</string>
 </resources>

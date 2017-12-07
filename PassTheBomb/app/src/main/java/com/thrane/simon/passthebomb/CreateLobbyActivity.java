@@ -3,6 +3,7 @@ package com.thrane.simon.passthebomb;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,6 +28,8 @@ public class CreateLobbyActivity extends AppCompatActivity {
     private Button btnOpenLobby;
     private RadioGroup rgDifficulty;
     private EditText edtGameName;
+    private Switch isPublicSwitch;
+
 
     private FirebaseDatabase database;
     private DatabaseReference gamesRef;
@@ -48,7 +52,14 @@ public class CreateLobbyActivity extends AppCompatActivity {
                 onBtnOpenLobbyClicked();
             }
         });
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         edtGameName = findViewById(R.id.edtGameName);
+        isPublicSwitch = findViewById(R.id.isPublicSwitch);
 
         rgDifficulty = findViewById(R.id.rgDifficulty);
 
@@ -66,7 +77,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
         Game game = new Game();
 
         // set category from the numberPickers current value
-        game.category = Category.values()[nbCategory.getValue()];
+        //game.category = Category.values()[nbCategory.getValue()];
 
         //set difficulty from selected radio button
         RadioButton selectedRb = findViewById(rgDifficulty.getCheckedRadioButtonId());
@@ -81,12 +92,14 @@ public class CreateLobbyActivity extends AppCompatActivity {
 //        prefsEditor.commit();
 
 
-
-        user.name = mPrefs.getString("UserName", null);
+        user.name = mPrefs.getString("UserName", "");
         game.host = user;
         game.users = new ArrayList<>();
         game.users.add(user);
-        game.password =  generatePassword();
+        game.isPublic = isPublicSwitch.isChecked();
+        if(!game.isPublic){
+            game.password =  generatePassword();
+        }
         game.name = edtGameName.getText().toString();
 
 //        gamesRef.push().setValue(game);

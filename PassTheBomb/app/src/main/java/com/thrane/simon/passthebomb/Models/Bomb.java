@@ -5,5 +5,9 @@ package com.thrane.simon.passthebomb.Models;
  */
 
 public class Bomb {
-    public long timeToLive;
+
+    public Bomb() {
+        // Default constructor required for calls to DataSnapshot.getValue(Game.class)
+    }
+	public long timeToLive;
 }

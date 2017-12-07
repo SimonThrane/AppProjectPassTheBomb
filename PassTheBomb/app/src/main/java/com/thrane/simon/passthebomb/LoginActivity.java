@@ -67,13 +67,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        if(currentUser != null)
+            updateUI(currentUser);
         // Check for existing Google Sign In account, if the user is already signed in
 // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
-
-
+        if (account != null)
+            updateUI(account);
     }
 
     private void updateUI(FirebaseUser currentUser) {
@@ -97,16 +97,15 @@ public class LoginActivity extends AppCompatActivity {
     private void updateUI(GoogleSignInAccount account) {
         Intent LobbyListIntent = new Intent(getBaseContext(), StartMenuActivity.class);
         saveUsernameToSharedPreference(account.getDisplayName());
-        LobbyListIntent.putExtra("UserAccount", account);
+        //LobbyListIntent.putExtra("UserAccount", account);
         startActivity(LobbyListIntent);
     }
 //https://stackoverflow.com/questions/7145606/how-android-sharedpreferences-save-store-object
     private void saveUsernameToSharedPreference(String name){
-        SharedPreferences mPrefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = mPrefs.edit();
         prefsEditor.putString("UserName", name);
         prefsEditor.commit();
-
     }
 
 

@@ -15,11 +15,7 @@
         <activity android:name=".StartMenuActivity" >
         </activity>
         <activity android:name=".LoginActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
         </activity>
 
         <!--<activity android:name=".CreateLobbyActivity" />-->
@@ -34,6 +30,11 @@
         <activity
             android:name=".CalibrateActivity"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".CreateLobbyActivity"

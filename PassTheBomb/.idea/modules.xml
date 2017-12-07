@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PassTheBomb.iml" filepath="$PROJECT_DIR$/PassTheBomb.iml" />
-      <module fileurl="file://C:\AndroidProjects\EksamensProjekt\AppProjectPassTheBomb\PassTheBomb\PassTheBomb.iml" filepath="C:\AndroidProjects\EksamensProjekt\AppProjectPassTheBomb\PassTheBomb\PassTheBomb.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\AndroidProjects\EksamensProjekt\AppProjectPassTheBomb\PassTheBomb\app\app.iml" filepath="C:\AndroidProjects\EksamensProjekt\AppProjectPassTheBomb\PassTheBomb\app\app.iml" />
     </modules>
   </component>
 </project>

@@ -55,7 +55,7 @@ public class CalibrateActivity extends AppCompatActivity {
 
         //Get data from LobbyActivity
         Intent fromLobbyIntent = getIntent();
-        gameId = fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
+        gameId = "-L-koVti07m6lQ9xU3f8";//fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
 
         calibrationHelper = new CalibrationHelper();
 

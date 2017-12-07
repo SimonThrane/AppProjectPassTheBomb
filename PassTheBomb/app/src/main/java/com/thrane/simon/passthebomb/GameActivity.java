@@ -30,7 +30,6 @@ import com.thrane.simon.passthebomb.Models.User;
 import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -57,7 +56,7 @@ public class GameActivity extends AppCompatActivity {
     private User phoneUser;
     private String gameId;
     private Game game;
-    private Bomb bomb;
+    private Bomb bomb; //= new Bomb();
     private User host;
 
     @Override
@@ -67,7 +66,8 @@ public class GameActivity extends AppCompatActivity {
 
         //Get Intent from calibration
         Intent intent = getIntent();
-        gameId ="-L-koVti07m6lQ9xU3f8";
+        gameId = intent.getStringExtra(Globals.GAME_KEY);
+        //gameId ="-L-koVti07m6lQ9xU3f8";
         database = FirebaseDatabase.getInstance();
 
         //TODO: Get phoneUser from sharedPrefs
@@ -83,7 +83,7 @@ public class GameActivity extends AppCompatActivity {
                 phoneUser = calibratedUsers.get(0);
 
                 userRef = database.getReference("Games/"+gameId+"/users/"+ phoneUser.id);
-                bombRef = database.getReference("Games/"+gameId+"/Bomb");
+                bombRef = database.getReference("Games/"+gameId+"/bomb");
                 passBombToRandomUser();
                 //Listen on the phone user
                 userRef.addValueEventListener(new ValueEventListener() {
@@ -169,7 +169,7 @@ public class GameActivity extends AppCompatActivity {
             initBomb();
             Random randomizer = new Random();
             User randomUser = calibratedUsers.get(randomizer.nextInt(calibratedUsers.size()));
-
+            gameRef.child("bomb").setValue(bomb);
             userRef.getParent().child(randomUser.id).child("hasBomb").setValue(true);
         //}
     }
@@ -186,7 +186,7 @@ public class GameActivity extends AppCompatActivity {
 
     //Pass the bomb, and
     private void passBombToPlayer(User user){
-        gameRef.child("bomb").setValue(bomb.timeToLive);
+        gameRef.child("bomb").setValue(bomb);
         userRef.getParent().child(user.id).child("hasBomb").setValue(true);
         userRef.getParent().child(phoneUser.id).child("hasBomb").setValue(false);
     }
@@ -205,11 +205,7 @@ public class GameActivity extends AppCompatActivity {
         new CountDownTimer(bombToCountdown.timeToLive, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                if(phoneUser.hasBomb) {
-                    bomb.timeToLive = millisUntilFinished;
-                }else{
-                    this.cancel();
-                }
+                bomb.timeToLive = millisUntilFinished;
             }
 
             public void onFinish() {

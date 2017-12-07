@@ -12,6 +12,7 @@ public class User implements Parcelable {
     public String name;
     public float angleAlpha;
     public boolean hasBomb;
+
     public User(){
         id = null;
         name = null;
@@ -22,6 +23,7 @@ public class User implements Parcelable {
         id = in.readString();
         name = in.readString();
         angleAlpha = in.readFloat();
+        hasBomb = in.readByte() != 0;
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -46,5 +48,6 @@ public class User implements Parcelable {
         parcel.writeString(id);
         parcel.writeString(name);
         parcel.writeFloat(angleAlpha);
+        parcel.writeByte((byte) (hasBomb ? 1 : 0));
     }
 }

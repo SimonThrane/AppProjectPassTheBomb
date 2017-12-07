@@ -22,7 +22,7 @@
         </intent-filter>
         </activity>
 
-        <activity android:name=".CreateLobbyActivity" />
+        <!--<activity android:name=".CreateLobbyActivity" />-->
         <activity android:name=".LobbyActivity" />
 
         <activity
@@ -30,9 +30,13 @@
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".ResultActivity" />
-        <!--<activity android:name=".JoinLobbyActivity" />-->
+        <activity android:name=".JoinLobbyActivity" />
         <activity
-            android:name=".JoinLobbyActivity"
+            android:name=".CalibrateActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".CreateLobbyActivity"
             android:screenOrientation="portrait">
         </activity>
 

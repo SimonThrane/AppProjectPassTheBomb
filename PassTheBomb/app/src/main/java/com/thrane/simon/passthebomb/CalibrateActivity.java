@@ -67,7 +67,7 @@ public class CalibrateActivity extends AppCompatActivity {
         });
 
         database = FirebaseDatabase.getInstance();
-        gameRef = database.getReference("Games/-L-CLhm9X9R6xo9mqSzT/users");
+        gameRef = database.getReference("Games/-L-b3NT-mBKMzv7Z9NFf/users");
         gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -145,7 +145,7 @@ public class CalibrateActivity extends AppCompatActivity {
             HashMap<Integer, String> userHash = (HashMap<Integer, String>) snap.getValue();
             User user = new User();
             user.name = userHash.get("name");
-            user.id = userHash.get("id");
+            user.id = snap.getKey();
             firebaseUsers.add(user);
         }
 

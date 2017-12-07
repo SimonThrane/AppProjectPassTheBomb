@@ -1,10 +1,12 @@
 package com.thrane.simon.passthebomb;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -17,16 +19,18 @@ import com.thrane.simon.passthebomb.Models.User;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.List;
 
 public class CreateLobbyActivity extends AppCompatActivity {
-    NumberPicker nbCategory;
-    Button btnBack;
-    Button btnOpenLobby;
-    RadioGroup rgDifficulty;
+    private NumberPicker nbCategory;
+    private Button btnBack;
+    private Button btnOpenLobby;
+    private RadioGroup rgDifficulty;
+    private EditText edtGameName;
 
     private FirebaseDatabase database;
     private DatabaseReference gamesRef;
+
+    SharedPreferences mPrefs;
 
     final String categories[] = {"General knowledge", "Books", "Film", "Music", "Musicals and theatres", "Television", "Video games", "Science and nature", "Computers", "Mathematics", "Mythology", "Sports", "Geography", "History", "Politics", "Art", "Celebrities", "Animals", "Vehicles", "Comics", "Gadgets", "Anime and manga", "Cartoon and animations"};
 
@@ -44,6 +48,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
                 onBtnOpenLobbyClicked();
             }
         });
+        edtGameName = findViewById(R.id.edtGameName);
 
         rgDifficulty = findViewById(R.id.rgDifficulty);
 
@@ -53,7 +58,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         gamesRef = database.getReference("Games");
 
-
+        mPrefs = getSharedPreferences(null,MODE_PRIVATE);
     }
 
     // gets difficulty and category and creates a gamelobby on firebase
@@ -68,13 +73,29 @@ public class CreateLobbyActivity extends AppCompatActivity {
         game.difficulty = selectedRb.getText().toString();
 
         User user = new User();
-        user.name = "Bobby";
+
+        // DELETE THIS - ONLY FOR TESTING
+//        SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+//        SharedPreferences.Editor prefsEditor = mPrefs.edit();
+//        prefsEditor.putString("UserName", "Bobby");
+//        prefsEditor.commit();
+
+
+
+        user.name = mPrefs.getString("UserName", null);
         game.host = user;
         game.users = new ArrayList<>();
         game.users.add(user);
         game.password =  generatePassword();
+        game.name = edtGameName.getText().toString();
 
-        gamesRef.push().setValue(game);
+//        gamesRef.push().setValue(game);
+        String gameKey = gamesRef.push().getKey();
+        gamesRef.child(gameKey).setValue(game);
+
+        Intent lobbyIntent = new Intent(getBaseContext(), LobbyActivity.class);
+        lobbyIntent.putExtra("GameKey", gameKey);
+        startActivity(lobbyIntent);
     }
 
     private void configureCategoryPicker() {

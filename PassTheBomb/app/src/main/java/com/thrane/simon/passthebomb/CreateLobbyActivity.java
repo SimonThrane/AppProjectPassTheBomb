@@ -83,6 +83,11 @@ public class CreateLobbyActivity extends AppCompatActivity {
 
 
         user.name = mPrefs.getString("UserName", null);
+
+        // ONLY FOR TESTING
+        if(user.name ==  null) {
+            user.name = "Bobby";
+        }
         game.host = user;
         game.users = new ArrayList<>();
         game.users.add(user);

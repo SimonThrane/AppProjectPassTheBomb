@@ -80,11 +80,17 @@ public class LobbyActivity extends AppCompatActivity {
                 if(game.password != null) {
                     txtPasswordTitle.setVisibility(View.VISIBLE);
                     txtPassword.setText(game.password);
+                    txtPassword.setVisibility(View.VISIBLE);
                 }
 
                 // Show START GAME button if this is the host
                 String currentUser = sharedPref.getString("UserName", null);
-//                currentUser
+
+                // TO DO remove - for test purposes. If currentUser is null we're in test environment, so set it explicitly
+                if(currentUser == null) {
+                    currentUser = "Bobby";
+                }
+
                 if(game.host.name.equals(currentUser)) {
                     btnStart.setVisibility(View.VISIBLE);
                 }

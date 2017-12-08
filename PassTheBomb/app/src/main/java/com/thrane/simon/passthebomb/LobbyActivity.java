@@ -72,8 +72,7 @@ public class LobbyActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Game game = dataSnapshot.getValue(Game.class);
-                // TO DO Fix the category thing with the enum and the thing
-                txtTriviaCategory.setText(game.category);
+                txtTriviaCategory.setText(game.category.name);
                 txtTriviaDifficulty.setText(game.difficulty);
                 txtGameName.setText(game.name);
 

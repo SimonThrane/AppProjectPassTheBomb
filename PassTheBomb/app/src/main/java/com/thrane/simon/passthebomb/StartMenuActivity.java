@@ -76,7 +76,7 @@ public class StartMenuActivity extends AppCompatActivity {
                 txtPlayerNum.setText(String.valueOf(gameDataItem.users.size()));
 
                 TextView txtCategory = v.findViewById(R.id.tvCategoryValue);
-                txtCategory.setText(gameDataItem.category);
+                txtCategory.setText(gameDataItem.category.name);
             }
         };
         lv = findViewById(R.id.listViewLobby);

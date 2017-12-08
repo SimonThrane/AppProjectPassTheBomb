@@ -12,7 +12,7 @@ public class Game {
 
     }
 
-    public Game( List<User> users, User host, Boolean isPublic, String category, String name, String difficulty, String password) {
+    public Game( List<User> users, User host, Boolean isPublic, Category category, String name, String difficulty, String password) {
         this.users = users;
         this.host = host;
         this.isPublic = isPublic;

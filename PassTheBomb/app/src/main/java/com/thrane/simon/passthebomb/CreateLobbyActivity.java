@@ -3,7 +3,6 @@ package com.thrane.simon.passthebomb;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -13,14 +12,19 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.thrane.simon.passthebomb.Models.Category;
 import com.thrane.simon.passthebomb.Models.Game;
 import com.thrane.simon.passthebomb.Models.User;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class CreateLobbyActivity extends AppCompatActivity {
     private NumberPicker nbCategory;
@@ -32,10 +36,13 @@ public class CreateLobbyActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference gamesRef;
+    private DatabaseReference categoriesRef;
+
+    private ArrayList<Category> mCategories;
 
     SharedPreferences mPrefs;
 
-    final String categories[] = {"General knowledge", "Books", "Film", "Music", "Musicals and theatres", "Television", "Video games", "Science and nature", "Computers", "Mathematics", "Mythology", "Sports", "Geography", "History", "Politics", "Art", "Celebrities", "Animals", "Vehicles", "Comics", "Gadgets", "Anime and manga", "Cartoon and animations"};
+//    final String categories[] = {"General knowledge", "Books", "Film", "Music", "Musicals and theatres", "Television", "Video games", "Science and nature", "Computers", "Mathematics", "Mythology", "Sports", "Geography", "History", "Politics", "Art", "Celebrities", "Animals", "Vehicles", "Comics", "Gadgets", "Anime and manga", "Cartoon and animations"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +70,28 @@ public class CreateLobbyActivity extends AppCompatActivity {
         rgDifficulty = findViewById(R.id.rgDifficulty);
 
         nbCategory = findViewById(R.id.nbCategory);
-        configureCategoryPicker();
+//        configureCategoryPicker();
+
+        mCategories = new ArrayList<>();
 
         database = FirebaseDatabase.getInstance();
         gamesRef = database.getReference("Games");
+        categoriesRef = database.getReference("categories");
+        categoriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    Category category = postSnapshot.getValue(Category.class);
+                    mCategories.add(category);
+                }
+                configureCategoryPicker(mCategories);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         mPrefs = getSharedPreferences(null,MODE_PRIVATE);
     }
@@ -75,8 +100,11 @@ public class CreateLobbyActivity extends AppCompatActivity {
     private void onBtnOpenLobbyClicked() {
         Game game = new Game();
 
-        // set category from the numberPickers current value
-        game.category = Category.values()[nbCategory.getValue()];
+        // set category from the numberPickers current value'
+        int nbCategoryIndex = nbCategory.getValue();
+        Category cat = new Category();
+        cat = mCategories.get(nbCategoryIndex);
+        game.category = cat;
 
         //set difficulty from selected radio button
         RadioButton selectedRb = findViewById(rgDifficulty.getCheckedRadioButtonId());
@@ -89,8 +117,6 @@ public class CreateLobbyActivity extends AppCompatActivity {
 //        SharedPreferences.Editor prefsEditor = mPrefs.edit();
 //        prefsEditor.putString("UserName", "Bobby");
 //        prefsEditor.commit();
-
-
 
         user.name = mPrefs.getString("UserName", null);
 
@@ -116,10 +142,16 @@ public class CreateLobbyActivity extends AppCompatActivity {
         startActivity(lobbyIntent);
     }
 
-    private void configureCategoryPicker() {
+    private void configureCategoryPicker(ArrayList<Category> categories) {
         nbCategory.setMinValue(0);
-        nbCategory.setMaxValue(categories.length - 1);
-        nbCategory.setDisplayedValues(categories);
+        nbCategory.setMaxValue(categories.size() - 1);
+
+        String[] categoryNames = new String[categories.size()];
+        Iterator<Category> categoryIter = categories.iterator();
+        for(int i = 0; i < categories.size(); i++ ) {
+            categoryNames[i] = categoryIter.next().name;
+        }
+        nbCategory.setDisplayedValues(categoryNames);
         nbCategory.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         nbCategory.setValue(0);
 //        NumberPicker.OnValueChangeListener catChangedListener = new NumberPicker.OnValueChangeListener() {

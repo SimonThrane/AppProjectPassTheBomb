@@ -6,6 +6,7 @@ import android.hardware.SensorManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,8 +23,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.thrane.simon.passthebomb.Fragments.QuestionDialogFragment;
 import com.thrane.simon.passthebomb.Models.Bomb;
 import com.thrane.simon.passthebomb.Models.Game;
+import com.thrane.simon.passthebomb.Models.Question;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
 
 import com.thrane.simon.passthebomb.Models.User;
@@ -58,17 +61,26 @@ public class GameActivity extends AppCompatActivity {
     private Game game;
     private Bomb bomb; //= new Bomb();
     private User host;
+    private FragmentManager fm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        //Fragment setup
+        fm = getSupportFragmentManager();
+
         //Get Intent from calibration
         Intent intent = getIntent();
         gameId = intent.getStringExtra(Globals.GAME_KEY);
         //gameId ="-L-koVti07m6lQ9xU3f8";
         database = FirebaseDatabase.getInstance();
+
+        Question question = mockQuestion();
+
+        QuestionDialogFragment qFrag = QuestionDialogFragment.newInstance(question);
+        qFrag.show(fm,"FragmentTest");
 
         //TODO: Get phoneUser from sharedPrefs
 
@@ -145,6 +157,19 @@ public class GameActivity extends AppCompatActivity {
         mediaPlayer.start();
 
 
+    }
+
+    private Question mockQuestion() {
+        Question q = new Question();
+        q.category = "Test category";
+        q.correctAnswer = "Jøderne";
+        ArrayList<String> incorrectAnswers = new ArrayList<>();
+        incorrectAnswers.add("Tyskerne");
+        incorrectAnswers.add("Danskerne");
+        incorrectAnswers.add("Amerikanerne");
+        q.incorrectAnswers = incorrectAnswers;
+        q.question = "Hvem står bag 9/11?";
+        return q;
     }
 
     @Override

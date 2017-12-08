@@ -8,7 +8,7 @@ public class Bomb {
 
     public Bomb() {
         // Default constructor required for calls to DataSnapshot.getValue(Game.class)
+
     }
-    public int timeToLive;
-    public User user;
+	public long timeToLive;
 }

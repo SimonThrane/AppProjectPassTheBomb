@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.thrane.simon.passthebomb.Models.Bomb;
 import com.thrane.simon.passthebomb.Models.Game;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
 
@@ -28,7 +30,7 @@ import com.thrane.simon.passthebomb.Models.User;
 import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import static java.lang.Math.abs;
@@ -38,10 +40,12 @@ public class GameActivity extends AppCompatActivity {
     ImageView bombImageView;
     MediaPlayer mediaPlayer;
     TextView txt;
-    ArrayList<User> calibratedUsers= new ArrayList<User>();
+    List<User> calibratedUsers= new ArrayList<>();
 
     private FirebaseDatabase database;
-    private DatabaseReference gamesRef;
+    private DatabaseReference gameRef;
+    private DatabaseReference userRef;
+    private DatabaseReference bombRef;
 
     private SensorManager sensorManager;
     private Sensor magSensor;
@@ -50,6 +54,10 @@ public class GameActivity extends AppCompatActivity {
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
     private User phoneUser;
+    private String gameId;
+    private Game game;
+    private Bomb bomb; //= new Bomb();
+    private User host;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,33 +66,63 @@ public class GameActivity extends AppCompatActivity {
 
         //Get Intent from calibration
         Intent intent = getIntent();
-        calibratedUsers = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
+        gameId = intent.getStringExtra(Globals.GAME_KEY);
+        //gameId ="-L-koVti07m6lQ9xU3f8";
         database = FirebaseDatabase.getInstance();
 
         //TODO: Get phoneUser from sharedPrefs
-        phoneUser = calibratedUsers.get(0);
-
-        gamesRef = database.getReference("Games/-L-b3NT-mBKMzv7Z9NFf/users/"+ phoneUser.id);
 
 
-        gamesRef.addValueEventListener(new ValueEventListener() {
+        gameRef = database.getReference("Games/"+gameId);
+        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //TODO: update phoneUser
-                User user = dataSnapshot.getValue(User.class);
-                phoneUser.hasBomb = user.hasBomb;
+                Game currentGame = dataSnapshot.getValue(Game.class);
+                host = currentGame.host;
+                calibratedUsers = currentGame.users;
+                phoneUser = calibratedUsers.get(0);
 
-                if(!phoneUser.hasBomb){
-                    bombImageView.setVisibility(View.INVISIBLE);
-                }else{
-                    bombImageView.setVisibility(View.VISIBLE);
-                }
+                userRef = database.getReference("Games/"+gameId+"/users/"+ phoneUser.id);
+                bombRef = database.getReference("Games/"+gameId+"/bomb");
+                passBombToRandomUser();
+                //Listen on the phone user
+                userRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //TODO: update phoneUser
+                        User user = dataSnapshot.getValue(User.class);
+                        phoneUser.hasBomb = user.hasBomb;
+
+                        if(!phoneUser.hasBomb){
+                            bombImageView.setVisibility(View.INVISIBLE);
+                        }else{
+                            bombRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    bomb = dataSnapshot.getValue(Bomb.class);
+                                    bombCountdown(bomb);
+                                    bombImageView.setVisibility(View.VISIBLE);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+
+
 
 
 
@@ -105,7 +143,7 @@ public class GameActivity extends AppCompatActivity {
         //Setup Mediaplayer
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.isis_theme_song);
         mediaPlayer.start();
-        passBombToRandomUser();
+
 
     }
 
@@ -128,9 +166,11 @@ public class GameActivity extends AppCompatActivity {
     //The host pass the bomb to a random user
     private void passBombToRandomUser(){
         //if(phoneUser == game.host) {
+            initBomb();
             Random randomizer = new Random();
             User randomUser = calibratedUsers.get(randomizer.nextInt(calibratedUsers.size()));
-            gamesRef.getParent().child(randomUser.id).child("hasBomb").setValue(true);
+            gameRef.child("bomb").setValue(bomb);
+            userRef.getParent().child(randomUser.id).child("hasBomb").setValue(true);
         //}
     }
 
@@ -146,8 +186,32 @@ public class GameActivity extends AppCompatActivity {
 
     //Pass the bomb, and
     private void passBombToPlayer(User user){
-        gamesRef.getParent().child(user.id).child("hasBomb").setValue(true);
-        gamesRef.getParent().child(phoneUser.id).child("hasBomb").setValue(false);
+        gameRef.child("bomb").setValue(bomb);
+        userRef.getParent().child(user.id).child("hasBomb").setValue(true);
+        userRef.getParent().child(phoneUser.id).child("hasBomb").setValue(false);
+    }
+
+    //Init bomb
+    private void initBomb(){
+        bomb = new Bomb();
+        Random rand = new Random();
+        long upper = 60000;
+        long lower = 30000;
+        bomb.timeToLive = lower +(long)(rand.nextDouble()*(upper - lower));
+    }
+
+    //Countdown bomb
+    private void bombCountdown(Bomb bombToCountdown){
+        new CountDownTimer(bombToCountdown.timeToLive, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                bomb.timeToLive = millisUntilFinished;
+            }
+
+            public void onFinish() {
+
+            }
+        }.start();
     }
 
     //Listing on bomb touch

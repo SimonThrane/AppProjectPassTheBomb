@@ -12,7 +12,8 @@ public class Game {
 
     }
 
-    public Game( List<User> users, User host, Boolean isPublic, String category, String name, String difficulty, String password) {
+    public Game( List<User> users, User host, Boolean isPublic, String category, String name, String difficulty, String password, Bomb bomb) {
+        this.bomb = bomb;
         this.users = users;
         this.host = host;
         this.isPublic = isPublic;
@@ -20,6 +21,7 @@ public class Game {
         this.name = name;
         this.difficulty = difficulty;
         this.password = password;
+
     }
 
     public List<User> users;
@@ -29,6 +31,7 @@ public class Game {
     public String name;
     public String difficulty;
     public String password;
+    public Bomb bomb;
 
 
 }

@@ -30,7 +30,6 @@ public class CreateLobbyActivity extends AppCompatActivity {
     private EditText edtGameName;
     private Switch isPublicSwitch;
 
-
     private FirebaseDatabase database;
     private DatabaseReference gamesRef;
 
@@ -77,7 +76,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
         Game game = new Game();
 
         // set category from the numberPickers current value
-        //game.category = Category.values()[nbCategory.getValue()];
+        game.category = Category.values()[nbCategory.getValue()];
 
         //set difficulty from selected radio button
         RadioButton selectedRb = findViewById(rgDifficulty.getCheckedRadioButtonId());
@@ -92,7 +91,13 @@ public class CreateLobbyActivity extends AppCompatActivity {
 //        prefsEditor.commit();
 
 
-        user.name = mPrefs.getString("UserName", "");
+
+        user.name = mPrefs.getString("UserName", null);
+
+        // ONLY FOR TESTING
+        if(user.name ==  null) {
+            user.name = "Bobby";
+        }
         game.host = user;
         game.users = new ArrayList<>();
         game.users.add(user);

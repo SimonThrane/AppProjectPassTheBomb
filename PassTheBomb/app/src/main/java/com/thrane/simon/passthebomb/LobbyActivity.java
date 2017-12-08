@@ -1,6 +1,8 @@
 package com.thrane.simon.passthebomb;
 
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,39 +28,47 @@ public class LobbyActivity extends AppCompatActivity {
     private TextView txtTriviaCategory;
     private TextView txtTriviaDifficulty;
     private TextView txtGameName;
+    private TextView txtPasswordTitle;
     private ListView lvPlayers;
     private FirebaseDatabase database;
     private DatabaseReference gamesRef;
     private SharedPreferences sharedPref;
     private Button btnStart;
+    private TextView txtPassword;
+    private String gameKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
+
+        database = FirebaseDatabase.getInstance();
+        gamesRef = database.getReference("Games");
+        Intent intent = getIntent();
+        gameKey = intent.getStringExtra("GameKey");
+
         txtTriviaCategory = findViewById(R.id.txtTriviaCategory);
         txtTriviaDifficulty = findViewById(R.id.txtTriviaDifficulty);
         txtGameName = findViewById(R.id.txtGameName);
+        txtPassword = findViewById(R.id.txtPassword);
+        txtPassword.setVisibility(View.INVISIBLE);
+        txtPasswordTitle = findViewById(R.id.txtPasswordTitle);
+        txtPasswordTitle.setVisibility(View.INVISIBLE);
         lvPlayers = findViewById(R.id.lvPlayers);
         btnStart = findViewById(R.id.btnStart);
         btnStart.setVisibility(View.GONE);
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent calibrateIntent = new Intent();
-                calibrateIntent.putExtra("GameKey", getIntent().getStringExtra("GameKey"));
-                startActivity(new Intent(getBaseContext(), CalibrateActivity.class));
+                gamesRef.child(gameKey).child("gameStarted").setValue(true);
+                startCalibrateActivity();
             }
         });
 
-        database = FirebaseDatabase.getInstance();
-        gamesRef = database.getReference("Games");
-
         sharedPref = getSharedPreferences(null, MODE_PRIVATE);
 
-        // Get game from firebase
-        Intent intent = getIntent();
-        String gameKey = intent.getStringExtra("GameKey");
-        gamesRef.child(gameKey).addValueEventListener(new ValueEventListener() {
+        // Get game info once
+        gamesRef.child(gameKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Game game = dataSnapshot.getValue(Game.class);
@@ -67,11 +77,44 @@ public class LobbyActivity extends AppCompatActivity {
                 txtTriviaDifficulty.setText(game.difficulty);
                 txtGameName.setText(game.name);
 
+                // If the game has a password, show it
+                if(game.password != null) {
+                    txtPasswordTitle.setVisibility(View.VISIBLE);
+                    txtPassword.setText(game.password);
+                    txtPassword.setVisibility(View.VISIBLE);
+                }
+
                 // Show START GAME button if this is the host
                 String currentUser = sharedPref.getString("UserName", null);
+
+                // TO DO remove - for test purposes. If currentUser is null we're in test environment, so set it explicitly
+                if(currentUser == null) {
+                    currentUser = "Bobby";
+                }
+
                 if(game.host.name.equals(currentUser)) {
                     btnStart.setVisibility(View.VISIBLE);
                 }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        gamesRef.child(gameKey).child("gameStarted").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // If game has started, go to calibrateActivtiy
+
+                Boolean started = dataSnapshot.getValue(Boolean.class);
+                if(started) {
+                    startCalibrateActivity();
+                }
+
+//                Log.d("gameStarted", dataSnapshot.getValue(Boolean.class).toString());
+
             }
 
             @Override
@@ -97,5 +140,11 @@ public class LobbyActivity extends AppCompatActivity {
 
         adapter.startListening();
         lvPlayers.setAdapter(adapter);
+    }
+
+    private void startCalibrateActivity() {
+        Intent calibrateIntent = new Intent();
+        calibrateIntent.putExtra("GameKey", getIntent().getStringExtra("GameKey"));
+        startActivity(new Intent(getBaseContext(), CalibrateActivity.class));
     }
 }

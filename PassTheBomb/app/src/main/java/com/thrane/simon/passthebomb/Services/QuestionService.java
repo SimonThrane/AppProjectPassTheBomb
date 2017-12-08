@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class QuestionService extends Service {
-
+    private int amountOfQuestions = 10;
     private RequestQueue mQueue;
     private String mBaseUrl = "https://opentdb.com/api.php";
     private Gson mGson;
@@ -39,7 +39,7 @@ public class QuestionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        this.getQuestions(21, 10, "medium");
+        this.getQuestions(21, amountOfQuestions, "medium");
         return super.onStartCommand(intent, flags, startId);
     }
 

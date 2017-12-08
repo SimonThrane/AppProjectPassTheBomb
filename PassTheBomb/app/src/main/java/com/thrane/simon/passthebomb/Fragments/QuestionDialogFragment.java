@@ -16,27 +16,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.thrane.simon.passthebomb.R;
 
-public class QuestionDialogFragment extends DialogFragment {
+import java.util.ArrayList;
 
-    private FirebaseDatabase database;
-    private DatabaseReference questionRef;
+public class QuestionDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        String gameId = "-L-k9FS4AUObWRuH8iuT";
+        //ArrayList<String> questionArray = new ArrayList<String>();
 
-        database = FirebaseDatabase.getInstance();
-        questionRef = database.getReference("Games/" + gameId + "/users");
-    /*
-        builder.setTitle(R.string.pick_color)
-                .setItems(R.array.colors_array, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
-                    }
-                });*/
+        builder.setTitle("Test");
         return builder.create();
     }
 }

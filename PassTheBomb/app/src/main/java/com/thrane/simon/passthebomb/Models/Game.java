@@ -12,7 +12,7 @@ public class Game {
 
     }
 
-    public Game( List<User> users, User host, Boolean isPublic, String category, String name, String difficulty, String password, Bomb bomb) {
+    public Game( List<User> users, User host, Boolean isPublic, Category category, String name, String difficulty, String password, Bomb bomb) {
         this.bomb = bomb;
         this.users = users;
         this.host = host;

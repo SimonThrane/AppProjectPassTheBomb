@@ -38,7 +38,7 @@ import java.util.Random;
 
 import static java.lang.Math.abs;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements QuestionDialogFragment.QuestionAnswerListener {
 
     ImageView bombImageView;
     MediaPlayer mediaPlayer;
@@ -162,13 +162,13 @@ public class GameActivity extends AppCompatActivity {
     private Question mockQuestion() {
         Question q = new Question();
         q.category = "Test category";
-        q.correctAnswer = "Jøderne";
+        q.correctAnswer = "Spanierne";
         ArrayList<String> incorrectAnswers = new ArrayList<>();
         incorrectAnswers.add("Tyskerne");
         incorrectAnswers.add("Danskerne");
         incorrectAnswers.add("Amerikanerne");
         q.incorrectAnswers = incorrectAnswers;
-        q.question = "Hvem står bag 9/11?";
+        q.question = "hallo";
         return q;
     }
 
@@ -237,6 +237,16 @@ public class GameActivity extends AppCompatActivity {
 
             }
         }.start();
+    }
+
+    @Override
+    public void onCorrectAnswer() {
+        Log.d("CorrectAnswer", "Correct answer");
+    }
+
+    @Override
+    public void onWrongAnswer() {
+        Log.d("WrongAnswer", "Wrong answer");
     }
 
     //Listing on bomb touch

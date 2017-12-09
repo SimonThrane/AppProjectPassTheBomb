@@ -20,12 +20,22 @@ import com.thrane.simon.passthebomb.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class QuestionDialogFragment extends DialogFragment {
+
+    private QuestionAnswerListener listener;
+
+    public interface QuestionAnswerListener {
+        void onCorrectAnswer();
+        void onWrongAnswer();
+    }
 
     public static final String QUESTION = "QUESTION";
     public static final String INCORRECT_ANSWERS = "INCORRECT_ANSWERS";
     public static final String CORRECT_ANSWER = "CORRECT_ANSWER";
+    private int maxAnswers = 4;
+    private int correctAnswerIndex = -1;
 
     public QuestionDialogFragment() {
     }
@@ -43,13 +53,28 @@ public class QuestionDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        listener = (QuestionAnswerListener)getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        Random rnd = new Random();
+        final int rndIndex = rnd.nextInt(maxAnswers);
 
-        //ArrayList<String> questionArray = new ArrayList<String>();
+        ArrayList<String> answers = new ArrayList<>();
 
         String title = getArguments().getString(QUESTION);
-        ArrayList<String> answers = getArguments().getStringArrayList(INCORRECT_ANSWERS);
-        answers.add(getArguments().getString(CORRECT_ANSWER));
+        String correctAnswer = getArguments().getString(CORRECT_ANSWER);
+
+        for(String q : getArguments().getStringArrayList(INCORRECT_ANSWERS)) {
+            //Handling lower bound
+            if(rndIndex == 0) {
+                answers.add(correctAnswer);
+            }
+            answers.add(q);
+            if(answers.size() == rndIndex) {
+                answers.add(correctAnswer);
+            }
+        }
+
+        correctAnswerIndex = rndIndex;
 
         final CharSequence[] answersFinal = answers.toArray(new String[answers.size()]);
 
@@ -57,7 +82,12 @@ public class QuestionDialogFragment extends DialogFragment {
                 .setItems(answersFinal, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Log.d("QuestionDialogClick", "It is clicked");
+                        if(i == correctAnswerIndex) {
+                            listener.onCorrectAnswer();
+                        } else {
+                            listener.onWrongAnswer();
+                        }
+                        Log.d("QuestionDialogClick", i + " is clicked" + " correctAnswer: " + correctAnswerIndex);
                     }
                 });
         return builder.create();

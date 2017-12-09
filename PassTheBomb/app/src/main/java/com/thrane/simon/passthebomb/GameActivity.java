@@ -240,12 +240,12 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     }
 
     @Override
-    public void onCorrectAnswer() {
+    public void onQuestionCorrectAnswer() {
         Log.d("CorrectAnswer", "Correct answer");
     }
 
     @Override
-    public void onWrongAnswer() {
+    public void onQuestionWrongAnswer() {
         Log.d("WrongAnswer", "Wrong answer");
     }
 

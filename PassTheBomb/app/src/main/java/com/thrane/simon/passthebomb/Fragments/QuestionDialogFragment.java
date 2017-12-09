@@ -27,8 +27,8 @@ public class QuestionDialogFragment extends DialogFragment {
     private QuestionAnswerListener listener;
 
     public interface QuestionAnswerListener {
-        void onCorrectAnswer();
-        void onWrongAnswer();
+        void onQuestionCorrectAnswer();
+        void onQuestionWrongAnswer();
     }
 
     public static final String QUESTION = "QUESTION";
@@ -83,9 +83,9 @@ public class QuestionDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(i == correctAnswerIndex) {
-                            listener.onCorrectAnswer();
+                            listener.onQuestionCorrectAnswer();
                         } else {
-                            listener.onWrongAnswer();
+                            listener.onQuestionWrongAnswer();
                         }
                         Log.d("QuestionDialogClick", i + " is clicked" + " correctAnswer: " + correctAnswerIndex);
                     }

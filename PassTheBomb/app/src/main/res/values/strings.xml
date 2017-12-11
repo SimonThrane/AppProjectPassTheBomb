@@ -31,4 +31,5 @@
     <string name="lobby_leave">Leave lobby</string>
     <string name="lobby_destroy">Destroy lobby</string>
     <string name="lobby_host">Host</string>
+    <string name="result_loser_description">just exploded! What a loser...</string>
 </resources>

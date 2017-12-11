@@ -23,7 +23,6 @@ import com.thrane.simon.passthebomb.Models.User;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 public class CreateLobbyActivity extends AppCompatActivity {

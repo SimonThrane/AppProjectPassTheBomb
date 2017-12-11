@@ -130,4 +130,14 @@
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="@+id/txtPasswordTitle"
         app:layout_constraintTop_toBottomOf="@+id/txtPasswordTitle" />
+
+    <Button
+        android:id="@+id/btnLeave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:layout_marginStart="28dp"
+        android:text="@string/lobby_leave"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

@@ -28,4 +28,6 @@
     <string name="create_lobby_privacy">Privacy</string>
     <string name="create_lobby_public">Public</string>
     <string name="loading_dialog_message">Getting game ready</string>
+    <string name="lobby_leave">Leave lobby</string>
+    <string name="lobby_destroy">Destroy lobby</string>
 </resources>

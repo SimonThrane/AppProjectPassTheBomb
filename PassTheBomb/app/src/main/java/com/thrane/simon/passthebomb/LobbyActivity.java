@@ -1,15 +1,12 @@
 package com.thrane.simon.passthebomb;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -34,6 +31,7 @@ public class LobbyActivity extends AppCompatActivity {
     private DatabaseReference gamesRef;
     private SharedPreferences sharedPref;
     private Button btnStart;
+    private Button btnLeave;
     private TextView txtPassword;
     private String gameKey;
 
@@ -55,6 +53,7 @@ public class LobbyActivity extends AppCompatActivity {
         txtPasswordTitle = findViewById(R.id.txtPasswordTitle);
         txtPasswordTitle.setVisibility(View.INVISIBLE);
         lvPlayers = findViewById(R.id.lvPlayers);
+        btnLeave = findViewById(R.id.btnLeave);
         btnStart = findViewById(R.id.btnStart);
         btnStart.setVisibility(View.GONE);
         btnStart.setOnClickListener(new View.OnClickListener() {
@@ -91,8 +90,25 @@ public class LobbyActivity extends AppCompatActivity {
                     currentUser = "Bobby";
                 }
 
+                // If we are the host, show the START GAME button, and change BACK button to say DESTROY
+                // If we are the host, destroy the game lobby if we leave
                 if(game.host.name.equals(currentUser)) {
                     btnStart.setVisibility(View.VISIBLE);
+                    btnLeave.setText(getString(R.string.lobby_destroy));
+                    btnLeave.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            gamesRef.child(gameKey).removeValue();
+                            finish();
+                        }
+                    });
+                } else {
+                    btnLeave.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            finish();
+                        }
+                    });
                 }
             }
 
@@ -108,12 +124,9 @@ public class LobbyActivity extends AppCompatActivity {
                 // If game has started, go to calibrateActivtiy
 
                 Boolean started = dataSnapshot.getValue(Boolean.class);
-                if(started) {
+                if(started != null && started) {
                     startCalibrateActivity();
                 }
-
-//                Log.d("gameStarted", dataSnapshot.getValue(Boolean.class).toString());
-
             }
 
             @Override

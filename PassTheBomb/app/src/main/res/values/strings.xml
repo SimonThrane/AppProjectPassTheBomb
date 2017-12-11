@@ -23,9 +23,6 @@
     <string name="lobby_players">Players</string>
     <string name="name">Name</string>
     <string name="lobby_start_game">Start game</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="lobby_lobby_name">Lobby name</string>
     <string name="lobby_password">Password</string>
     <string name="create_lobby_privacy">Privacy</string>

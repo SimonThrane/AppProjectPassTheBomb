@@ -9,4 +9,5 @@ public class Globals {
     public static final String GAME_KEY = "GAME_KEY";
     public static final String QUESTION_EVENT = "QUESTION_EVENT";
     public static final String QUESTION_EVENT_DATA = "QUESTION_EVENT_DATA";
+    public static final int MAX_PLAYERS = 4;
 }

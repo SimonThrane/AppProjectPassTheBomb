@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,8 +17,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.thrane.simon.passthebomb.Models.Game;
 import com.thrane.simon.passthebomb.Models.User;
+import com.thrane.simon.passthebomb.Util.Globals;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class JoinLobbyActivity extends AppCompatActivity {
@@ -65,12 +65,17 @@ public class JoinLobbyActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    //Game currentGame = snapshot.getValue(Game.class);
-                    HashMap<Integer, String> gameHash = (HashMap<Integer, String>) snapshot.getValue();
+                    Game currentGame = snapshot.getValue(Game.class);
+                    //HashMap<Integer, String> gameHash = (HashMap<Integer, String>) snapshot.getValue();
                     // if a game with the password is found, add the user to the lobby
-                    if(gameHash.get("password").equals(password)) {
+                    if(currentGame.password.equals(password)) {
                         String key = snapshot.getKey();
                         List<User> users = snapshot.getValue(Game.class).users;
+                        // check if the lobby is full
+                        if(users.size() >= Globals.MAX_PLAYERS) {
+                            Toast.makeText(JoinLobbyActivity.this, "The lobby you are trying to join is full", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
                         User currentUser = new User();
                         currentUser.name = sharedPref.getString("UserName", null);
                         if(currentUser.name == null) currentUser.name = "Unknown user";

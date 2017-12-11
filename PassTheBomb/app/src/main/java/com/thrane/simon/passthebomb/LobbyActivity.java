@@ -34,6 +34,8 @@ public class LobbyActivity extends AppCompatActivity {
     private Button btnLeave;
     private TextView txtPassword;
     private String gameKey;
+    private String currentUser;
+    private Game gameSnapshot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,20 +72,20 @@ public class LobbyActivity extends AppCompatActivity {
         gamesRef.child(gameKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Game game = dataSnapshot.getValue(Game.class);
-                txtTriviaCategory.setText(game.category.name);
-                txtTriviaDifficulty.setText(game.difficulty);
-                txtGameName.setText(game.name);
+                gameSnapshot = dataSnapshot.getValue(Game.class);
+                txtTriviaCategory.setText(gameSnapshot.category.name);
+                txtTriviaDifficulty.setText(gameSnapshot.difficulty);
+                txtGameName.setText(gameSnapshot.name);
 
                 // If the game has a password, show it
-                if(game.password != null) {
+                if(gameSnapshot.password != null) {
                     txtPasswordTitle.setVisibility(View.VISIBLE);
-                    txtPassword.setText(game.password);
+                    txtPassword.setText(gameSnapshot.password);
                     txtPassword.setVisibility(View.VISIBLE);
                 }
 
                 // Show START GAME button if this is the host
-                String currentUser = sharedPref.getString("UserName", null);
+                currentUser = sharedPref.getString("UserName", null);
 
                 // TO DO remove - for test purposes. If currentUser is null we're in test environment, so set it explicitly
                 if(currentUser == null) {
@@ -92,7 +94,8 @@ public class LobbyActivity extends AppCompatActivity {
 
                 // If we are the host, show the START GAME button, and change BACK button to say DESTROY
                 // If we are the host, destroy the game lobby if we leave
-                if(game.host.name.equals(currentUser)) {
+
+                if(isHost(currentUser)) {
                     btnStart.setVisibility(View.VISIBLE);
                     btnLeave.setText(getString(R.string.lobby_destroy));
                     btnLeave.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +150,12 @@ public class LobbyActivity extends AppCompatActivity {
             protected void populateView(View v, User model, int position) {
                 TextView txtName = v.findViewById(R.id.txtName);
                 txtName.setText(model.name);
+                TextView txtHost = v.findViewById(R.id.txtHost);
+                txtHost.setVisibility(View.INVISIBLE);
+                boolean isHost = isHost(model.name);
+                if(isHost) {
+                    txtHost.setVisibility(View.VISIBLE);
+                }
             }
         };
 
@@ -158,5 +167,12 @@ public class LobbyActivity extends AppCompatActivity {
         Intent calibrateIntent = new Intent();
         calibrateIntent.putExtra("GameKey", getIntent().getStringExtra("GameKey"));
         startActivity(new Intent(getBaseContext(), CalibrateActivity.class));
+    }
+
+    // TO DO make check better with ID's
+    private boolean isHost(String userName) {
+        if(gameSnapshot.host.name.equals(userName)) {
+            return true;
+        } return false;
     }
 }

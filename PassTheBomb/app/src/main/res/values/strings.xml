@@ -30,4 +30,5 @@
     <string name="loading_dialog_message">Getting game ready</string>
     <string name="lobby_leave">Leave lobby</string>
     <string name="lobby_destroy">Destroy lobby</string>
+    <string name="lobby_host">Host</string>
 </resources>

@@ -8,14 +8,12 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="55dp"
+        android:layout_width="0dp"
         android:layout_height="55dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
+        android:layout_marginEnd="101dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         app:layout_constraintEnd_toStartOf="@+id/txtName"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtHost"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/bomb" />
 
@@ -23,11 +21,25 @@
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="100dp"
         android:layout_marginTop="38dp"
         android:text="@string/name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtHost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="38dp"
+        android:text="@string/lobby_host"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="invisible" />
+
 </android.support.constraint.ConstraintLayout>

@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.thrane.simon.passthebomb.Fragments.LoadingDialogFragment;
 import com.thrane.simon.passthebomb.Fragments.QuestionDialogFragment;
 import com.thrane.simon.passthebomb.Models.Bomb;
 import com.thrane.simon.passthebomb.Models.Game;
@@ -69,19 +70,25 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private FragmentManager fm;
     private BroadcastReceiver questionsReciever;
     private ArrayList<Question> allQuestions;
+    private LoadingDialogFragment loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        //Fragment setup
+        fm = getSupportFragmentManager();
+
         //Make getting data ready dialog here
+        loadingDialog = LoadingDialogFragment.newInstance();
+        loadingDialog.show(fm,"Test");
 
         //Register reciever
         questionsReciever = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                //Stop getting data ready dialog here
+                loadingDialog.dismiss();
                 //Start game when questions is ready
                 allQuestions = intent.getParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA);
                 gameSetup();
@@ -96,9 +103,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     }
 
     private void gameSetup() {
-        //Fragment setup
-        fm = getSupportFragmentManager();
-
         //Get Intent from calibration
         Intent intent = getIntent();
         gameId = intent.getStringExtra(Globals.GAME_KEY);

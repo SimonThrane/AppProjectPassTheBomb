@@ -16,9 +16,6 @@ import com.thrane.simon.passthebomb.R;
 //Heavily inspired from this stackoverflow: https://stackoverflow.com/questions/23272122/showing-progress-dialog-within-dialogfragment
 public class LoadingDialogFragment extends DialogFragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     private String mParam1;
     private String mParam2;
 
@@ -28,12 +25,8 @@ public class LoadingDialogFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static LoadingDialogFragment newInstance(String param1, String param2) {
+    public static LoadingDialogFragment newInstance() {
         LoadingDialogFragment fragment = new LoadingDialogFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -47,8 +40,7 @@ public class LoadingDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         ProgressDialog dialog = new ProgressDialog(getActivity(), getTheme());
-        dialog.setTitle("Hej");
-        dialog.setMessage("test");
+        dialog.setTitle(getString(R.string.loading_dialog_message));
         dialog.setIndeterminate(true);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         return dialog;

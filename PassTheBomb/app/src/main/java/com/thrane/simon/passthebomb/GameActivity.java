@@ -1,12 +1,16 @@
 package com.thrane.simon.passthebomb;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +31,7 @@ import com.thrane.simon.passthebomb.Fragments.QuestionDialogFragment;
 import com.thrane.simon.passthebomb.Models.Bomb;
 import com.thrane.simon.passthebomb.Models.Game;
 import com.thrane.simon.passthebomb.Models.Question;
+import com.thrane.simon.passthebomb.Services.QuestionService;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
 
 import com.thrane.simon.passthebomb.Models.User;
@@ -62,12 +67,35 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private Bomb bomb; //= new Bomb();
     private User host;
     private FragmentManager fm;
+    private BroadcastReceiver questionsReciever;
+    private ArrayList<Question> allQuestions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        //Make getting data ready dialog here
+
+        //Register reciever
+        questionsReciever = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //Stop getting data ready dialog here
+                //Start game when questions is ready
+                allQuestions = intent.getParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA);
+                gameSetup();
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(questionsReciever, new IntentFilter(Globals.QUESTION_EVENT));
+
+        //Start questionService
+        Intent questionIntent = new Intent(this, QuestionService.class);
+        startService(questionIntent);
+    }
+
+    private void gameSetup() {
         //Fragment setup
         fm = getSupportFragmentManager();
 
@@ -77,7 +105,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         //gameId ="-L-koVti07m6lQ9xU3f8";
         database = FirebaseDatabase.getInstance();
 
-        Question question = mockQuestion();
+        Question question = allQuestions.get(0);
 
         QuestionDialogFragment qFrag = QuestionDialogFragment.newInstance(question);
         qFrag.show(fm,"FragmentTest");
@@ -134,17 +162,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             }
         });
 
-
-
-
-
-
-        //Set up for Calibration
-        calibrationHelper = new CalibrationHelper();
-        sensorManager = (SensorManager)getSystemService(this.SENSOR_SERVICE);
-        magSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
         //Setup view
         bombImageView = (ImageView)findViewById(R.id.bombImageView);
         bombImageView.setImageResource(R.drawable.bomb);
@@ -155,8 +172,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         //Setup Mediaplayer
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.isis_theme_song);
         mediaPlayer.start();
-
-
     }
 
     private Question mockQuestion() {
@@ -175,6 +190,10 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     @Override
     protected void onResume() {
         super.onResume();
+        calibrationHelper = new CalibrationHelper();
+        sensorManager = (SensorManager)getSystemService(this.SENSOR_SERVICE);
+        magSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(calibrationHelper, magSensor, SensorManager.SENSOR_DELAY_UI);
         sensorManager.registerListener(calibrationHelper, accSensor, SensorManager.SENSOR_DELAY_UI);
     }

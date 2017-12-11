@@ -3,6 +3,7 @@ package com.thrane.simon.passthebomb.Services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -16,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import com.thrane.simon.passthebomb.Models.Question;
 import com.thrane.simon.passthebomb.Models.QuestionApiResponse.QuestionApiResponse;
 import com.thrane.simon.passthebomb.Models.QuestionApiResponse.Result;
+import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.Iterator;
 
 public class QuestionService extends Service {
     private int amountOfQuestions = 10;
+    private ArrayList<Question> questions;
     private RequestQueue mQueue;
     private String mBaseUrl = "https://opentdb.com/api.php";
     private Gson mGson;
@@ -53,8 +56,7 @@ public class QuestionService extends Service {
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("response is good:", response);
-                responseObjToQuestionList(jsonToPojo(response));
+                broadcastResult(response);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -64,6 +66,14 @@ public class QuestionService extends Service {
         });
 
         mQueue.add(request);
+    }
+
+    private void broadcastResult(String response) {
+        Log.d("response is good:", response);
+        questions = responseObjToQuestionList(jsonToPojo(response));
+        Intent questionsIntent = new Intent(Globals.QUESTION_EVENT);
+        questionsIntent.putParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA,questions);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(questionsIntent);
     }
 
     // inspired from https://stackoverflow.com/questions/5554217/google-gson-deserialize-listclass-object-generic-type

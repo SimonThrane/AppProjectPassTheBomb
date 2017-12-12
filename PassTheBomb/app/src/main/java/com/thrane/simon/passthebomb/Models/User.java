@@ -8,7 +8,7 @@ import android.os.Parcelable;
  */
 
 public class User implements Parcelable {
-    public String id;
+    public String id; // should be google account id
     public String name;
     public float angleAlpha;
     public boolean hasBomb;

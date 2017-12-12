@@ -10,9 +10,9 @@ import android.os.Parcelable;
 public class User implements Parcelable {
     public String id; // should be google account id
     public String name;
+    public String photoUri;
     public float angleAlpha;
     public boolean hasBomb;
-    public String photoUri;
 
     public User(){
         id = null;
@@ -23,6 +23,7 @@ public class User implements Parcelable {
     protected User(Parcel in) {
         id = in.readString();
         name = in.readString();
+        photoUri = in.readString();
         angleAlpha = in.readFloat();
         hasBomb = in.readByte() != 0;
     }
@@ -48,6 +49,7 @@ public class User implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(id);
         parcel.writeString(name);
+        parcel.writeString(photoUri);
         parcel.writeFloat(angleAlpha);
         parcel.writeByte((byte) (hasBomb ? 1 : 0));
     }

@@ -74,6 +74,7 @@ public class QuestionService extends Service {
         Intent questionsIntent = new Intent(Globals.QUESTION_EVENT);
         questionsIntent.putParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA,questions);
         LocalBroadcastManager.getInstance(this).sendBroadcast(questionsIntent);
+        stopSelf();
     }
 
     // inspired from https://stackoverflow.com/questions/5554217/google-gson-deserialize-listclass-object-generic-type

@@ -2,6 +2,7 @@ package com.thrane.simon.passthebomb;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,12 +18,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
+import com.thrane.simon.passthebomb.Util.Globals;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "FIREBASE_AUTH";
     private static final int RC_SIGN_IN = 100;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private SharedPreferences mPrefs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
+                .requestId()
+                .requestProfile()
                 .build();
 
         // Build a GoogleSignInClient with the options specified by gso.
@@ -50,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
                 signInWithFacebook();
             }
         });
-
     }
 
     private void signInWithFacebook() {
@@ -85,6 +88,10 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Google authenticated succeed",
                     Toast.LENGTH_SHORT).show();
             // Signed in successfully, show authenticated UI.
+            saveUsernameToSharedPreference(account.getDisplayName());
+            saveStringToSharedPrefs(Globals.USER_NAME, account.getDisplayName());
+            saveStringToSharedPrefs(Globals.USER_ID, account.getId());
+            saveStringToSharedPrefs(Globals.USER_PHOTO_URI, account.getPhotoUrl().toString());
             updateUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
@@ -94,15 +101,35 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void savePhotoUri(Uri photoUrl) {
+        if (mPrefs == null) {
+            mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        }
+        SharedPreferences.Editor prefsEditor = mPrefs.edit();
+        prefsEditor.putString(Globals.USER_PHOTO_URI, photoUrl.toString());
+        prefsEditor.commit();
+    }
+
+    private void saveStringToSharedPrefs(String key, String value) {
+        if (mPrefs == null) {
+            mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        }
+        SharedPreferences.Editor prefsEditor = mPrefs.edit();
+        prefsEditor.putString(key, value);
+        prefsEditor.commit();
+    }
+
     private void updateUI(GoogleSignInAccount account) {
         Intent LobbyListIntent = new Intent(getBaseContext(), StartMenuActivity.class);
-        saveUsernameToSharedPreference(account.getDisplayName());
+
         //LobbyListIntent.putExtra("UserAccount", account);
         startActivity(LobbyListIntent);
     }
 //https://stackoverflow.com/questions/7145606/how-android-sharedpreferences-save-store-object
     private void saveUsernameToSharedPreference(String name){
-        SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        if (mPrefs == null) {
+            mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        }
         SharedPreferences.Editor prefsEditor = mPrefs.edit();
         prefsEditor.putString("UserName", name);
         prefsEditor.commit();

@@ -47,8 +47,6 @@ import static java.lang.Math.abs;
 public class GameActivity extends AppCompatActivity implements QuestionDialogFragment.QuestionAnswerListener {
 
     ImageView bombImageView;
-    MediaPlayer mediaPlayer;
-    TextView txt;
     List<User> calibratedUsers= new ArrayList<>();
 
     private FirebaseDatabase database;
@@ -113,11 +111,11 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
         Question question = allQuestions.get(0);
 
-        QuestionDialogFragment qFrag = QuestionDialogFragment.newInstance(question);
-        qFrag.show(fm,"FragmentTest");
+
 
         //TODO: Get phoneUser from sharedPrefs
-
+        //SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        //phoneUserName  = mPrefs.getString("UserName","DEFAULT" );
 
         gameRef = database.getReference("Games/"+gameId);
         gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -138,14 +136,14 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                         phoneUser.hasBomb = user.hasBomb;
 
                         if(!phoneUser.hasBomb){
-                            bombImageView.setVisibility(View.INVISIBLE);
+                            bombImageView.setAlpha(0.0f);
                         }else{
                             bombRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     bomb = dataSnapshot.getValue(Bomb.class);
                                     bombCountdown(bomb);
-                                    bombImageView.setVisibility(View.VISIBLE);
+                                    bombImageView.setAlpha(1.0f);
                                 }
 
                                 @Override
@@ -172,23 +170,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
         //Setup listener
         bombImageView.setOnTouchListener(new OnBombTouchListener());
-
-        //Setup Mediaplayer
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.isis_theme_song);
-        mediaPlayer.start();
-    }
-
-    private Question mockQuestion() {
-        Question q = new Question();
-        q.category = "Test category";
-        q.correctAnswer = "Spanierne";
-        ArrayList<String> incorrectAnswers = new ArrayList<>();
-        incorrectAnswers.add("Tyskerne");
-        incorrectAnswers.add("Danskerne");
-        incorrectAnswers.add("Amerikanerne");
-        q.incorrectAnswers = incorrectAnswers;
-        q.question = "hallo";
-        return q;
     }
 
     @Override
@@ -200,15 +181,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(calibrationHelper, magSensor, SensorManager.SENSOR_DELAY_UI);
         sensorManager.registerListener(calibrationHelper, accSensor, SensorManager.SENSOR_DELAY_UI);
-    }
-
-    //Release mediaplayer
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mediaPlayer.stop();
-        mediaPlayer.release();
-
     }
 
     //The host pass the bomb to a random user
@@ -270,6 +242,15 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     @Override
     public void onQuestionWrongAnswer() {
         Log.d("WrongAnswer", "Wrong answer");
+        getRandomQuestion();
+    }
+
+    private void getRandomQuestion(){
+
+        Random randomizer = new Random();
+        Question randomQuestion = allQuestions.get(randomizer.nextInt(allQuestions.size()));
+        QuestionDialogFragment qFrag = QuestionDialogFragment.newInstance(randomQuestion);
+        qFrag.show(fm,"FragmentTest");
     }
 
     //Listing on bomb touch
@@ -291,6 +272,11 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, final float velocityX, float velocityY) {
 
+                if(!phoneUser.hasBomb){
+                    getRandomQuestion();
+                    return false;
+
+                }
                 //Touch start coordinates
                 float x1 = e1.getX();
                 float y1 = e1.getY();
@@ -320,7 +306,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                         @Override
                         public void onAnimationEnd(Animation animation) {
                             //TODO: fix animation
-                            bombImageView.setVisibility(View.INVISIBLE);
+                            bombImageView.setAlpha(0.0f);
                             //Get the current Aplha
                             sensorManager.getRotationMatrix(rotationMatrix, null,
                                     calibrationHelper.accelerometerReading, calibrationHelper.magnetometerReading);

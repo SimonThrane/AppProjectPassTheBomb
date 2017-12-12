@@ -47,8 +47,6 @@ import static java.lang.Math.abs;
 public class GameActivity extends AppCompatActivity implements QuestionDialogFragment.QuestionAnswerListener {
 
     ImageView bombImageView;
-    MediaPlayer mediaPlayer;
-    TextView txt;
     List<User> calibratedUsers= new ArrayList<>();
 
     private FirebaseDatabase database;
@@ -172,23 +170,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
         //Setup listener
         bombImageView.setOnTouchListener(new OnBombTouchListener());
-
-        //Setup Mediaplayer
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.isis_theme_song);
-        mediaPlayer.start();
-    }
-
-    private Question mockQuestion() {
-        Question q = new Question();
-        q.category = "Test category";
-        q.correctAnswer = "Spanierne";
-        ArrayList<String> incorrectAnswers = new ArrayList<>();
-        incorrectAnswers.add("Tyskerne");
-        incorrectAnswers.add("Danskerne");
-        incorrectAnswers.add("Amerikanerne");
-        q.incorrectAnswers = incorrectAnswers;
-        q.question = "hallo";
-        return q;
     }
 
     @Override
@@ -200,15 +181,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(calibrationHelper, magSensor, SensorManager.SENSOR_DELAY_UI);
         sensorManager.registerListener(calibrationHelper, accSensor, SensorManager.SENSOR_DELAY_UI);
-    }
-
-    //Release mediaplayer
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mediaPlayer.stop();
-        mediaPlayer.release();
-
     }
 
     //The host pass the bomb to a random user

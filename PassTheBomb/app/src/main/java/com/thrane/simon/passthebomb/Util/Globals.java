@@ -11,4 +11,7 @@ public class Globals {
     public static final String QUESTION_EVENT_DATA = "QUESTION_EVENT_DATA";
     public static final String LOSER = "LOSER";
     public static final int MAX_PLAYERS = 4;
+    public static final String USER_ID = "USER_ID";
+    public static final String USER_PHOTO_URI = "USER_PHOTO_URI";
+    public static final String USER_NAME = "USER_NAME";
 }

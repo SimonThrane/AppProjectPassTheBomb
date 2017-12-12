@@ -12,6 +12,7 @@ public class User implements Parcelable {
     public String name;
     public float angleAlpha;
     public boolean hasBomb;
+    public String photoUri;
 
     public User(){
         id = null;

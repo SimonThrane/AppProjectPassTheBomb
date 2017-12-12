@@ -4,45 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.thrane.simon.passthebomb.StartMenuActivity">
+    tools:context="com.thrane.simon.passthebomb.StartMenuActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <Button
         android:id="@+id/createBtn"
-        android:layout_width="140dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="72dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:text="@string/create_lobby"
-        app:layout_constraintEnd_toStartOf="@+id/joinLobbyBtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listViewLobby"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="72dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/joinLobbyBtn"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="39dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/join_lobby"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/createBtn"
-        app:layout_constraintTop_toBottomOf="@+id/listViewLobby"
-        android:layout_marginRight="16dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ListView
         android:id="@+id/listViewLobby"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/joinLobbyBtn"
+        android:layout_marginBottom="23dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="29dp"
+        app:layout_constraintBottom_toTopOf="@+id/createBtn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtAvailableGames" />
+
+    <TextView
+        android:id="@+id/txtAvailableGames"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/start_available_games"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

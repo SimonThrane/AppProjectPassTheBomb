@@ -19,6 +19,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.thrane.simon.passthebomb.Models.Game;
 import com.thrane.simon.passthebomb.Models.User;
+import com.thrane.simon.passthebomb.Util.Globals;
 
 public class LobbyActivity extends AppCompatActivity {
 
@@ -45,7 +46,7 @@ public class LobbyActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         gamesRef = database.getReference("Games");
         Intent intent = getIntent();
-        gameKey = intent.getStringExtra("GameKey");
+        gameKey = intent.getStringExtra(Globals.GAME_KEY);
 
         txtTriviaCategory = findViewById(R.id.txtTriviaCategory);
         txtTriviaDifficulty = findViewById(R.id.txtTriviaDifficulty);

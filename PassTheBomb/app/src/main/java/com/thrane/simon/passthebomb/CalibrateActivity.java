@@ -55,7 +55,7 @@ public class CalibrateActivity extends AppCompatActivity {
 
         //Get data from LobbyActivity
         Intent fromLobbyIntent = getIntent();
-        gameId = "-L-koVti07m6lQ9xU3f8";//fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
+        gameId = "-L03qOwiiDLyBVh8EFtI"; //fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
 
         calibrationHelper = new CalibrationHelper();
 
@@ -121,12 +121,8 @@ public class CalibrateActivity extends AppCompatActivity {
 
         //Save alpha on current user
         currentUser.angleAlpha = orientationAngles[0];
-        gameRef.child(currentUser.id).child("angleAlpha").setValue(currentUser.angleAlpha).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                onAngleUpdated();
-            }
-        });
+
+        onAngleUpdated();
     }
 
     private void onAngleUpdated() {
@@ -138,6 +134,7 @@ public class CalibrateActivity extends AppCompatActivity {
             Log.d("DONE CALIBRATING","numberOfUsersNotCalibrated " + numberOfUsersNotCalibrated + ". Now starting game...");
             Intent gameIntent = new Intent(this, GameActivity.class);
             gameIntent.putExtra(Globals.GAME_KEY,gameId);
+            gameIntent.putParcelableArrayListExtra(Globals.CALIBRATED_USERS, users);
             startActivity(gameIntent);
         }
     }

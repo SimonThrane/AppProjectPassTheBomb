@@ -106,6 +106,8 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         //Get Intent from calibration
         Intent intent = getIntent();
         gameId = intent.getStringExtra(Globals.GAME_KEY);
+        calibratedUsers = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
+        phoneUser = calibratedUsers.get(0); // temporary phone user
         //gameId ="-L-koVti07m6lQ9xU3f8";
         database = FirebaseDatabase.getInstance();
 
@@ -123,8 +125,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Game currentGame = dataSnapshot.getValue(Game.class);
                 host = currentGame.host;
-                calibratedUsers = currentGame.users;
-                phoneUser = calibratedUsers.get(0);
 
                 userRef = database.getReference("Games/"+gameId+"/users/"+ phoneUser.id);
                 bombRef = database.getReference("Games/"+gameId+"/bomb");

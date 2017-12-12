@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.thrane.simon.passthebomb.Models.Category;
 import com.thrane.simon.passthebomb.Models.Game;
 import com.thrane.simon.passthebomb.Models.User;
+import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -117,7 +118,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
 //        prefsEditor.putString("UserName", "Bobby");
 //        prefsEditor.commit();
 
-        user.name = mPrefs.getString("UserName", null);
+        user.name = mPrefs.getString(Globals.USER_NAME, null);
 
         // ONLY FOR TESTING
         if(user.name ==  null) {
@@ -137,7 +138,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
         gamesRef.child(gameKey).setValue(game);
 
         Intent lobbyIntent = new Intent(getBaseContext(), LobbyActivity.class);
-        lobbyIntent.putExtra("GameKey", gameKey);
+        lobbyIntent.putExtra(Globals.GAME_KEY, gameKey);
         startActivity(lobbyIntent);
     }
 

@@ -110,6 +110,26 @@ public class LobbyActivity extends AppCompatActivity {
                     btnLeave.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+//                            for(int i = 0; i < gameSnapshot.users.size(); i++) {
+//                                if(gameSnapshot.users.get(i).id.equals(sharedPref.getString(Globals.USER_ID, null))) {
+//                                    gameSnapshot.users.remove(i);
+//                                    break;
+//                                }
+//                            }
+                            Query query = gamesRef.child(gameKey).child("users").orderByChild("id").equalTo(sharedPref.getString(Globals.USER_ID, null));
+                            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String key = dataSnapshot.getKey();
+                                    gamesRef.child(gameKey).child("users").child(key).removeValue();
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                            gamesRef.child(gameKey).child("users").setValue(gameSnapshot);
                             finish();
                         }
                     });

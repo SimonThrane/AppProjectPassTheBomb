@@ -13,6 +13,7 @@ public class User implements Parcelable {
     public float angleAlpha;
     public boolean hasBomb;
     public String firebaseId;
+    public String photoUri;
 
     public User(){
         id = null;

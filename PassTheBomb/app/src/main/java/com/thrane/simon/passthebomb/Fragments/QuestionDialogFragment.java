@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -12,11 +13,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.thrane.simon.passthebomb.Adapters.QuestionAnswerAdapter;
 import com.thrane.simon.passthebomb.Models.Question;
 import com.thrane.simon.passthebomb.R;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +32,8 @@ import java.util.Random;
 public class QuestionDialogFragment extends DialogFragment {
 
     private QuestionAnswerListener listener;
+    private TextView txtTitle;
+    private ListView lviAnswers;
 
     public interface QuestionAnswerListener {
         void onQuestionCorrectAnswer();
@@ -50,11 +59,17 @@ public class QuestionDialogFragment extends DialogFragment {
         return frag;
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_question_dialog, container);
+    }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        txtTitle = view.findViewById(R.id.fragment_question_title);
+        lviAnswers = view.findViewById(R.id.question_fragment_answer_list);
         listener = (QuestionAnswerListener)getActivity();
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         Random rnd = new Random();
         final int rndIndex = rnd.nextInt(maxAnswers);
 
@@ -62,34 +77,31 @@ public class QuestionDialogFragment extends DialogFragment {
 
         String title = getArguments().getString(QUESTION);
         String correctAnswer = getArguments().getString(CORRECT_ANSWER);
+        ArrayList<String> wrongAnswers = getArguments().getStringArrayList(INCORRECT_ANSWERS);
 
-        for(String q : getArguments().getStringArrayList(INCORRECT_ANSWERS)) {
-            //Handling lower bound
-            if(rndIndex == 0) {
-                answers.add(correctAnswer);
-            }
-            answers.add(q);
+        for(int i = 0, wrongAnswerIndex = 0; i<maxAnswers; i++) {
             if(answers.size() == rndIndex) {
                 answers.add(correctAnswer);
+            } else {
+                answers.add(wrongAnswers.get(wrongAnswerIndex++));
             }
         }
 
         correctAnswerIndex = rndIndex;
 
-        final CharSequence[] answersFinal = answers.toArray(new String[answers.size()]);
-
-        builder.setTitle(title)
-                .setItems(answersFinal, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if(i == correctAnswerIndex) {
-                            listener.onQuestionCorrectAnswer();
-                        } else {
-                            listener.onQuestionWrongAnswer();
-                        }
-                        Log.d("QuestionDialogClick", i + " is clicked" + " correctAnswer: " + correctAnswerIndex);
-                    }
-                });
-        return builder.create();
+        txtTitle.setText(title);
+        lviAnswers.setAdapter(new QuestionAnswerAdapter(getContext(),answers));
+        lviAnswers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i == correctAnswerIndex) {
+                    listener.onQuestionCorrectAnswer();
+                } else {
+                    listener.onQuestionWrongAnswer();
+                }
+                Log.d("QuestionDialogClick", i + " is clicked" + " correctAnswer: " + correctAnswerIndex);
+            }
+        });
+        setCancelable(false);
     }
 }

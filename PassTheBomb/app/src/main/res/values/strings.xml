@@ -3,7 +3,7 @@
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_in_with_facebook">Sign In With Facebook</string>
     <string name="create_lobby">Create Lobby</string>
-    <string name="join_lobby">Join Lobby</string>
+    <string name="join_lobby">Join with password</string>
     <string name="create_lobby_back">Back</string>
     <string name="create_lobby_open_lobby">Open Lobby</string>
     <string name="create_lobby_easy">Easy</string>
@@ -33,4 +33,9 @@
     <string name="lobby_host">Host</string>
     <string name="result_loser_description">just exploded! What a loser...</string>
     <string name="result_return_to_menu">Return to main menu</string>
+    <string name="start_available_games">Available public games</string>
+    <string name="start_dialog_title">Join lobby</string>
+    <string name="start_dialog_message">Do you want to join game</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

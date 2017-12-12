@@ -77,13 +77,15 @@ public class JoinLobbyActivity extends AppCompatActivity {
                             break;
                         }
                         User currentUser = new User();
-                        currentUser.name = sharedPref.getString("UserName", null);
-                        if(currentUser.name == null) currentUser.name = "Unknown user";
+                        currentUser.name = sharedPref.getString(Globals.USER_NAME, null);
+                        currentUser.id = sharedPref.getString(Globals.USER_ID, null);
+                        currentUser.photoUri = sharedPref.getString(Globals.USER_PHOTO_URI, null);
+                        if(currentUser.name == null) currentUser.name = "Unknown user"; // can only be null in testing env
                         users.add(currentUser);
                         gamesRef.child(key).child("users").setValue(users);
 
                         Intent intent = new Intent(getBaseContext(), LobbyActivity.class);
-                        intent.putExtra("GameKey", key);
+                        intent.putExtra(Globals.GAME_KEY, key);
                         startActivity(intent);
                         break;
                     }

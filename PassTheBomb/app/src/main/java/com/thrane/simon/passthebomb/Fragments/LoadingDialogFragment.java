@@ -33,7 +33,6 @@ public class LoadingDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setCancelable(false);
     }
 
     @Override
@@ -43,6 +42,7 @@ public class LoadingDialogFragment extends DialogFragment {
         dialog.setTitle(getString(R.string.loading_dialog_message));
         dialog.setIndeterminate(true);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        setCancelable(false);
         return dialog;
     }
 

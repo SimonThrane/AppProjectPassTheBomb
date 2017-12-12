@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.thrane.simon.passthebomb.Fragments.LoadingDialogFragment;
 import com.thrane.simon.passthebomb.Models.User;
 import com.thrane.simon.passthebomb.Util.CalibrationHelper;
 import com.thrane.simon.passthebomb.Util.Globals;
@@ -49,11 +51,21 @@ public class CalibrateActivity extends AppCompatActivity {
     private DatabaseReference gameRef;
     private String gameId;
     private String phoneUserId;
+    private LoadingDialogFragment loadingDialog;
+    private FragmentManager fm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibrate);
+
+        //Set loading dialog
+        //Fragment setup
+        fm = getSupportFragmentManager();
+
+        //Make getting data ready dialog here
+        loadingDialog = LoadingDialogFragment.newInstance();
+        loadingDialog.show(fm,"Loading Dialog");
 
         //Get data from LobbyActivity
         Intent fromLobbyIntent = getIntent();
@@ -87,6 +99,7 @@ public class CalibrateActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 fetchPlayers(dataSnapshot);
                 showUser(currentUser);
+                loadingDialog.dismiss();
             }
 
             @Override

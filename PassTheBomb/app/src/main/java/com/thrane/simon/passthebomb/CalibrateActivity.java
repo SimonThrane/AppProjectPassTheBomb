@@ -1,6 +1,7 @@
 package com.thrane.simon.passthebomb;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.provider.ContactsContract;
@@ -47,6 +48,7 @@ public class CalibrateActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference gameRef;
     private String gameId;
+    private String phoneUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,9 @@ public class CalibrateActivity extends AppCompatActivity {
         //Get data from LobbyActivity
         Intent fromLobbyIntent = getIntent();
         gameId = "-L03qOwiiDLyBVh8EFtI"; //fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
+
+        SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        phoneUserId  = mPrefs.getString(Globals.USER_ID,"DEFAULT" );
 
         calibrationHelper = new CalibrationHelper();
 
@@ -156,9 +161,9 @@ public class CalibrateActivity extends AppCompatActivity {
         ArrayList<User> firebaseUsers = new ArrayList<>();
         for(DataSnapshot snap : dataSnapshot.getChildren()) {
             HashMap<Integer, String> userHash = (HashMap<Integer, String>) snap.getValue();
-            User user = new User();
-            user.name = userHash.get("name");
-            user.id = snap.getKey();
+            User user = snap.getValue(User.class);
+            //user.name = userHash.get("name");
+            user.firebaseId= snap.getKey();
             firebaseUsers.add(user);
         }
 
@@ -172,8 +177,13 @@ public class CalibrateActivity extends AppCompatActivity {
     }
 
     private void showUser(User user) {
-        String descriptionString = getResources().getString(R.string.calibrate_activity_description) + " " + user.name;
-        descriptionTxt.setText(descriptionString);
+        if(!phoneUserId.equals(user.id)){
+            String descriptionString = getResources().getString(R.string.calibrate_activity_description) + " " + user.name;
+            descriptionTxt.setText(descriptionString);
+        }else{
+            onAngleUpdated();
+        }
+
         //Set image with user image
     }
 }

@@ -35,7 +35,7 @@ public class LobbyActivity extends AppCompatActivity {
     private Button btnLeave;
     private TextView txtPassword;
     private String gameKey;
-    private String currentUser;
+    private User currentUser;
     private Game gameSnapshot;
 
     @Override
@@ -43,6 +43,7 @@ public class LobbyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
+        currentUser = new User();
         database = FirebaseDatabase.getInstance();
         gamesRef = database.getReference("Games");
         Intent intent = getIntent();
@@ -86,12 +87,8 @@ public class LobbyActivity extends AppCompatActivity {
                 }
 
                 // Show START GAME button if this is the host
-                currentUser = sharedPref.getString("UserName", null);
-
-                // TO DO remove - for test purposes. If currentUser is null we're in test environment, so set it explicitly
-                if(currentUser == null) {
-                    currentUser = "Bobby";
-                }
+                currentUser.id = sharedPref.getString(Globals.USER_ID,null);
+                currentUser.name = sharedPref.getString(Globals.USER_NAME, null);
 
                 // If we are the host, show the START GAME button, and change BACK button to say DESTROY
                 // If we are the host, destroy the game lobby if we leave
@@ -110,6 +107,7 @@ public class LobbyActivity extends AppCompatActivity {
                     btnLeave.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            leaveLobby();
                             finish();
                         }
                     });
@@ -153,7 +151,7 @@ public class LobbyActivity extends AppCompatActivity {
                 txtName.setText(model.name);
                 TextView txtHost = v.findViewById(R.id.txtHost);
                 txtHost.setVisibility(View.INVISIBLE);
-                boolean isHost = isHost(model.name);
+                boolean isHost = isHost(model);
                 if(isHost) {
                     txtHost.setVisibility(View.VISIBLE);
                 }
@@ -171,9 +169,46 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     // TO DO make check better with ID's
-    private boolean isHost(String userName) {
-        if(gameSnapshot.host.name.equals(userName)) {
+    private boolean isHost(User user) {
+        if(gameSnapshot.host.id.equals(user.id)) {
             return true;
         } return false;
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if(isHost(currentUser)) {
+            gamesRef.child(gameKey).removeValue();
+        } else {
+            leaveLobby();
+        }
+        super.onBackPressed();
+    }
+
+    public void leaveLobby() {
+        Query query = gamesRef
+                .child(gameKey)
+                .child("users")
+                .orderByChild("id")
+                .equalTo(currentUser.id);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    gamesRef
+                            .child(gameKey)
+                            .child("users")
+                            .child(data.getKey())
+                            .removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

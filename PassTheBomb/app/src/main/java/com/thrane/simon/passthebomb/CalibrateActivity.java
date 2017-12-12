@@ -137,6 +137,7 @@ public class CalibrateActivity extends AppCompatActivity {
             gameIntent.putExtra(Globals.GAME_KEY,gameId);
             gameIntent.putParcelableArrayListExtra(Globals.CALIBRATED_USERS, users);
             startActivity(gameIntent);
+            finish();
         }
     }
 

@@ -57,7 +57,8 @@ public class CalibrateActivity extends AppCompatActivity {
 
         //Get data from LobbyActivity
         Intent fromLobbyIntent = getIntent();
-        gameId = "-L03qOwiiDLyBVh8EFtI"; //fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
+        //gameId = "-L03qOwiiDLyBVh8EFtI";
+        gameId = fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
 
         SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
         phoneUserId  = mPrefs.getString(Globals.USER_ID,"DEFAULT" );
@@ -93,24 +94,6 @@ public class CalibrateActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    private ArrayList<User> getUsers() {
-        //Mock users
-        ArrayList<User> list = new ArrayList<>();
-        User user1 = new User();
-        user1.id = "1";
-        user1.name = "Kasper";
-        User user2 = new User();
-        user2.id = "1";
-        user2.name = "Jeppe";
-        User user3 = new User();
-        user3.id = "1";
-        user3.name = "Simon";
-        list.add(user1);
-        list.add(user2);
-        list.add(user3);
-        return list;
     }
 
     private void done() {

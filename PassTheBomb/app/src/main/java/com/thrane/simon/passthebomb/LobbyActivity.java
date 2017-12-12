@@ -165,9 +165,9 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     private void startCalibrateActivity() {
-        Intent calibrateIntent = new Intent();
-        calibrateIntent.putExtra("GameKey", getIntent().getStringExtra("GameKey"));
-        startActivity(new Intent(getBaseContext(), CalibrateActivity.class));
+        Intent calibrateIntent = new Intent(this, CalibrateActivity.class);
+        calibrateIntent.putExtra(Globals.GAME_KEY, gameKey);
+        startActivity(calibrateIntent);
     }
 
     // TO DO make check better with ID's

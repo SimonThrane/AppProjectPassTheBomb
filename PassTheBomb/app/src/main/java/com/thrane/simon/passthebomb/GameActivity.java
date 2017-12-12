@@ -3,6 +3,7 @@ package com.thrane.simon.passthebomb;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.content.Intent;
@@ -63,12 +64,13 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private User phoneUser;
     private String gameId;
     private Game game;
-    private Bomb bomb; //= new Bomb();
+    private Bomb bomb= new Bomb();
     private User host;
     private FragmentManager fm;
     private BroadcastReceiver questionsReciever;
     private ArrayList<Question> allQuestions;
     private LoadingDialogFragment loadingDialog;
+    private String phoneUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,17 +107,15 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         Intent intent = getIntent();
         gameId = intent.getStringExtra(Globals.GAME_KEY);
         calibratedUsers = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
-        phoneUser = calibratedUsers.get(0); // temporary phone user
+        SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        phoneUserId  = mPrefs.getString(Globals.USER_ID,"DEFAULT" );
+        setPhoneUser();
         //gameId ="-L-koVti07m6lQ9xU3f8";
         database = FirebaseDatabase.getInstance();
 
-        Question question = allQuestions.get(0);
-
-
-
         //TODO: Get phoneUser from sharedPrefs
-        //SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
-        //phoneUserName  = mPrefs.getString("UserName","DEFAULT" );
+
+
 
         gameRef = database.getReference("Games/"+gameId);
         gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -124,10 +124,11 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                 Game currentGame = dataSnapshot.getValue(Game.class);
                 host = currentGame.host;
 
-                userRef = database.getReference("Games/"+gameId+"/users/"+ phoneUser.id);
+                userRef = database.getReference("Games/"+gameId+"/users/"+phoneUser.firebaseId);
                 bombRef = database.getReference("Games/"+gameId+"/bomb");
                 passBombToRandomUser();
                 //Listen on the phone user
+
                 userRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -183,21 +184,31 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         sensorManager.registerListener(calibrationHelper, accSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
+    private void setPhoneUser(){
+        for(User user: calibratedUsers) {
+            if(user.id.equals(phoneUserId)) {
+                phoneUser = user;
+            }
+        }
+    }
+
     //The host pass the bomb to a random user
     private void passBombToRandomUser(){
-        //if(phoneUser == game.host) {
+        if(phoneUser.id.equals(host.id)) {
             initBomb();
             Random randomizer = new Random();
             User randomUser = calibratedUsers.get(randomizer.nextInt(calibratedUsers.size()));
             gameRef.child("bomb").setValue(bomb);
-            userRef.getParent().child(randomUser.id).child("hasBomb").setValue(true);
-        //}
+            userRef.getParent().child(randomUser.firebaseId).child("hasBomb").setValue(true);
+        }
     }
 
     private void calculateNearestUser(float coor){
-        User nearestUser = calibratedUsers.get(0);
+
+        User nearestUser = new User();
+        nearestUser.angleAlpha = 100;
         for(User user : calibratedUsers){
-            if(abs(user.angleAlpha-coor) < abs(nearestUser.angleAlpha-coor)){
+            if(phoneUserId != user.id && abs(user.angleAlpha-coor) < abs(nearestUser.angleAlpha-coor)){
                 nearestUser = user;
             }
         }
@@ -207,8 +218,8 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     //Pass the bomb, and
     private void passBombToPlayer(User user){
         gameRef.child("bomb").setValue(bomb);
-        userRef.getParent().child(user.id).child("hasBomb").setValue(true);
-        userRef.getParent().child(phoneUser.id).child("hasBomb").setValue(false);
+        userRef.getParent().child(user.firebaseId).child("hasBomb").setValue(true);
+        userRef.getParent().child(phoneUser.firebaseId).child("hasBomb").setValue(false);
     }
 
     //Init bomb

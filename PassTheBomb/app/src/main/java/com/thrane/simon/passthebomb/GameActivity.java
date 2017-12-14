@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.os.Parcelable;
+import android.renderscript.Sampler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -71,6 +72,9 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private ArrayList<Question> allQuestions;
     private LoadingDialogFragment loadingDialog;
     private String phoneUserId;
+    private ValueEventListener gameListener;
+    private ValueEventListener userListener;
+    private ValueEventListener bombListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,55 +119,72 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
         //TODO: Get phoneUser from sharedPrefs
 
-
-
+        // get database references
         gameRef = database.getReference("Games/"+gameId);
-        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        bombRef = database.getReference("Games/"+gameId+"/bomb");
+        userRef = database.getReference("Games/"+gameId+"/users/"+phoneUser.firebaseId);
+
+        // create listeners and add them to the references
+        gameListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    // game does not exist anymore, finish game activity
+                    finish();
+                    return;
+                }
                 Game currentGame = dataSnapshot.getValue(Game.class);
                 host = currentGame.host;
 
-                userRef = database.getReference("Games/"+gameId+"/users/"+phoneUser.firebaseId);
-                bombRef = database.getReference("Games/"+gameId+"/bomb");
                 passBombToRandomUser();
-                //Listen on the phone user
-
-                userRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //TODO: update phoneUser
-                        User user = dataSnapshot.getValue(User.class);
-                        phoneUser.hasBomb = user.hasBomb;
-
-                        if(!phoneUser.hasBomb){
-                            bombImageView.setAlpha(0.0f);
-                        }else{
-                            bombRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    bomb = dataSnapshot.getValue(Bomb.class);
-                                    bombCountdown(bomb);
-                                    bombImageView.setAlpha(1.0f);
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
             }
-        });
+        };
+        gameRef.addListenerForSingleValueEvent(gameListener);
+
+        bombListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                bomb = dataSnapshot.getValue(Bomb.class);
+                bombCountdown(bomb);
+                bombImageView.setAlpha(1.0f);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //TODO: update phoneUser
+                if(!dataSnapshot.exists()) {
+                    // users dont exist anymore, which means the game has ended
+                    finish();
+                    return;
+                }
+                User user = dataSnapshot.getValue(User.class);
+                phoneUser.hasBomb = user.hasBomb;
+
+                if(!phoneUser.hasBomb){
+                    bombImageView.setAlpha(0.0f);
+                }else{
+                    bombRef.addListenerForSingleValueEvent(bombListener);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        userRef.addValueEventListener(userListener);
 
         //Setup view
         bombImageView = (ImageView)findViewById(R.id.bombImageView);
@@ -171,6 +192,13 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
         //Setup listener
         bombImageView.setOnTouchListener(new OnBombTouchListener());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        gameRef.removeEventListener(gameListener);
+        userRef.removeEventListener(userListener);
     }
 
     @Override

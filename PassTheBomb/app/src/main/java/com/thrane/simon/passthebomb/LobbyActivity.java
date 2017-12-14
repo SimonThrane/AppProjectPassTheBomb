@@ -37,6 +37,7 @@ public class LobbyActivity extends AppCompatActivity {
     private String gameKey;
     private User currentUser;
     private Game gameSnapshot;
+    private ValueEventListener gameStartedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,14 +121,33 @@ public class LobbyActivity extends AppCompatActivity {
             }
         });
 
-        gamesRef.child(gameKey).child("gameStarted").addValueEventListener(new ValueEventListener() {
+        gameStartedListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // If game has started, go to calibrateActivtiy
-
+                if(!dataSnapshot.exists()) {
+                    return;
+                }
                 Boolean started = dataSnapshot.getValue(Boolean.class);
                 if(started != null && started) {
-                    startCalibrateActivity();
+                    if(!isHost(currentUser)) {
+                        startCalibrateActivity();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        gamesRef.child(gameKey).child("gameStarted").addValueEventListener(gameStartedListener);
+
+        // if game stops existing, leave the lobby
+        gamesRef.child(gameKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    finish();
                 }
             }
 
@@ -166,6 +186,7 @@ public class LobbyActivity extends AppCompatActivity {
         Intent calibrateIntent = new Intent(this, CalibrateActivity.class);
         calibrateIntent.putExtra(Globals.GAME_KEY, gameKey);
         startActivity(calibrateIntent);
+
     }
 
     // TO DO make check better with ID's
@@ -173,6 +194,12 @@ public class LobbyActivity extends AppCompatActivity {
         if(gameSnapshot.host.id.equals(user.id)) {
             return true;
         } return false;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        gamesRef.removeEventListener(gameStartedListener);
     }
 
     @Override

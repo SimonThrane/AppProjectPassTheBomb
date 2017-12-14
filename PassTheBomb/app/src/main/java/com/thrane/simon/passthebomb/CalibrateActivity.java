@@ -49,6 +49,8 @@ public class CalibrateActivity extends AppCompatActivity {
     private User currentUser;
     private FirebaseDatabase database;
     private DatabaseReference gameRef;
+    private ValueEventListener userListener;
+    private ValueEventListener gameListener;
     private String gameId;
     private String phoneUserId;
     private LoadingDialogFragment loadingDialog;
@@ -94,7 +96,7 @@ public class CalibrateActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         gameRef = database.getReference("Games/" + gameId + "/users");
-        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 fetchPlayers(dataSnapshot);
@@ -106,7 +108,23 @@ public class CalibrateActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        gameRef.addListenerForSingleValueEvent(userListener);
+
+        gameListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        gameRef.addValueEventListener(gameListener);
     }
 
     private void done() {
@@ -139,6 +157,14 @@ public class CalibrateActivity extends AppCompatActivity {
             startActivity(gameIntent);
             finish();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        gameRef.removeEventListener(userListener);
+        gameRef.removeEventListener(gameListener);
+
     }
 
     @Override

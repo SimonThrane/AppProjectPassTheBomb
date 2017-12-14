@@ -56,6 +56,8 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private DatabaseReference userRef;
     private DatabaseReference bombRef;
 
+    private QuestionDialogFragment qFrag;
+
     private SensorManager sensorManager;
     private Sensor magSensor;
     private CalibrationHelper calibrationHelper;
@@ -75,6 +77,8 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private ValueEventListener gameListener;
     private ValueEventListener userListener;
     private ValueEventListener bombListener;
+    private ValueEventListener gameEndedListener;
+    private Boolean initGame = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,9 +138,28 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                     return;
                 }
                 Game currentGame = dataSnapshot.getValue(Game.class);
-                host = currentGame.host;
+                if(initGame){
+                    host = currentGame.host;
+                    passBombToRandomUser();
+                    initGame = false;
+                }
+                if(currentGame != null) {
+                    if (currentGame.users.size() > calibratedUsers.size()) {
+                        //TODO: end game
+                        finish();
+                    }
+                    if (currentGame.gameEnded) {
+                        Context gameContext = getGameContext();
+                        User loser = findLoser(currentGame.users);
+                        Intent resultIntent = new Intent(gameContext, ResultActivity.class);
+                        resultIntent.putExtra(Globals.LOSER, loser.name);
+                        startActivity(resultIntent);
+                        finish();
+                    }
+                }else{
+                    finish();
+                }
 
-                passBombToRandomUser();
             }
 
             @Override
@@ -144,7 +167,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
             }
         };
-        gameRef.addListenerForSingleValueEvent(gameListener);
+        gameRef.addValueEventListener(gameListener);
 
         bombListener = new ValueEventListener() {
             @Override
@@ -195,10 +218,55 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
+        if(isHost(phoneUser)){
+            gameRef.removeValue();
+        }
         gameRef.removeEventListener(gameListener);
         userRef.removeEventListener(userListener);
+        bombRef.removeEventListener(bombListener);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if(isHost(phoneUser)) {
+            gameRef.removeValue();
+        } else {
+            userRef.removeValue();
+        }
+        super.onBackPressed();
+    }
+
+    private boolean isHost(User user){
+        if(host.id.equals(user.id)) {
+            return true;
+        } return false;
+    }
+
+    private Context getGameContext(){
+        return this;
+    }
+
+    private User findLoser(List<User> users){
+        for(User user: users){
+            if(user.hasBomb){
+                return user;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(isHost(phoneUser)){
+            gameRef.removeValue();
+        }
+        gameRef.removeEventListener(gameListener);
+        userRef.removeEventListener(userListener);
+        bombRef.removeEventListener(bombListener);
     }
 
     @Override
@@ -234,13 +302,17 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private void calculateNearestUser(float coor){
 
         User nearestUser = new User();
+        nearestUser.name = "dummy";
         nearestUser.angleAlpha = 100;
         for(User user : calibratedUsers){
             if(phoneUserId != user.id && abs(user.angleAlpha-coor) < abs(nearestUser.angleAlpha-coor)){
                 nearestUser = user;
             }
         }
-        passBombToPlayer(nearestUser);
+        if(!phoneUser.id.equals(nearestUser.id) && nearestUser.name != "dummy"){
+            passBombToPlayer(nearestUser);
+        }
+
     }
 
     //Pass the bomb, and
@@ -268,7 +340,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             }
 
             public void onFinish() {
-
+                gameRef.child("gameEnded").setValue(true);
             }
         }.start();
     }
@@ -276,19 +348,22 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     @Override
     public void onQuestionCorrectAnswer() {
         Log.d("CorrectAnswer", "Correct answer");
+        qFrag.dismiss();
     }
 
     @Override
     public void onQuestionWrongAnswer() {
         Log.d("WrongAnswer", "Wrong answer");
+        qFrag.dismiss();
         getRandomQuestion();
+
     }
 
     private void getRandomQuestion(){
 
         Random randomizer = new Random();
         Question randomQuestion = allQuestions.get(randomizer.nextInt(allQuestions.size()));
-        QuestionDialogFragment qFrag = QuestionDialogFragment.newInstance(randomQuestion);
+        qFrag = QuestionDialogFragment.newInstance(randomQuestion);
         qFrag.show(fm,"FragmentTest");
     }
 

@@ -31,7 +31,6 @@ public class ResultActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String loserName = intent.getStringExtra(Globals.LOSER);
-        loserName = "Bobby";
 
         txtLoser.setText(loserName + " " + getString(R.string.result_loser_description));
     }

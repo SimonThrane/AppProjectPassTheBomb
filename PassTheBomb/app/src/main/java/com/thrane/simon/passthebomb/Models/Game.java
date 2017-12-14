@@ -33,6 +33,7 @@ public class Game {
     public String password;
     public Bomb bomb;
     public Boolean gameStarted = false;
+    public Boolean gameEnded = false;
 
 
 }

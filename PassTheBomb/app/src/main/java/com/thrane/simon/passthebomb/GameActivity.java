@@ -269,17 +269,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(isHost(phoneUser)){
-            gameRef.removeValue();
-        }
-        gameRef.removeEventListener(gameListener);
-        userRef.removeEventListener(userListener);
-        bombRef.removeEventListener(bombListener);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         calibrationHelper = new CalibrationHelper();

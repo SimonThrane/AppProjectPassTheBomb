@@ -31,6 +31,7 @@ import com.thrane.simon.passthebomb.Util.Globals;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CalibrateActivity extends AppCompatActivity {
 
@@ -49,12 +50,17 @@ public class CalibrateActivity extends AppCompatActivity {
     private User currentUser;
     private FirebaseDatabase database;
     private DatabaseReference gameRef;
+    private ValueEventListener userListenerOnce;
     private ValueEventListener userListener;
     private ValueEventListener gameListener;
     private String gameId;
     private String phoneUserId;
     private LoadingDialogFragment loadingDialog;
     private FragmentManager fm;
+    private int usersInGame = 0;
+    private boolean firstUserCheck = true;
+    private SharedPreferences mPrefs;
+    private String userKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +80,8 @@ public class CalibrateActivity extends AppCompatActivity {
         //gameId = "-L03qOwiiDLyBVh8EFtI";
         gameId = fromLobbyIntent.getStringExtra(Globals.GAME_KEY);
 
-        SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
-        phoneUserId  = mPrefs.getString(Globals.USER_ID,"DEFAULT" );
+        mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        phoneUserId  = mPrefs.getString(Globals.USER_ID,null);
 
         calibrationHelper = new CalibrationHelper();
 
@@ -96,7 +102,7 @@ public class CalibrateActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         gameRef = database.getReference("Games/" + gameId + "/users");
-        userListener = new ValueEventListener() {
+        userListenerOnce = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 fetchPlayers(dataSnapshot);
@@ -109,7 +115,34 @@ public class CalibrateActivity extends AppCompatActivity {
 
             }
         };
-        gameRef.addListenerForSingleValueEvent(userListener);
+        userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<User> firebaseUsers = new ArrayList<>();
+
+                for(DataSnapshot snap : dataSnapshot.getChildren()) {
+                    User user = snap.getValue(User.class);
+                    firebaseUsers.add(user);
+                }
+
+                // if this is the first time we fetch the players, save the number of players
+                // if this is NOT the first time, check if the number of players are still the same, and leave if they are not
+                if(firstUserCheck) {
+                    usersInGame = firebaseUsers.size();
+                } else if (firebaseUsers.size() != usersInGame) {
+                    finish();
+                }
+
+                firstUserCheck = false;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        gameRef.addListenerForSingleValueEvent(userListenerOnce);
+        gameRef.addValueEventListener(userListener);
 
         gameListener = new ValueEventListener() {
             @Override
@@ -164,6 +197,18 @@ public class CalibrateActivity extends AppCompatActivity {
         super.onStop();
         gameRef.removeEventListener(userListener);
         gameRef.removeEventListener(gameListener);
+        gameRef.removeEventListener(userListenerOnce);
+        Log.d("CalibrateActivity", "onStop");
+//        if(!finishedOnPurpose) {
+//            database.getReference("Games/" + gameId + "/users/" + userKey).removeValue();
+//        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // if back is pressed, destroy the game, we'll start over
+        database.getReference("Games/" + gameId).removeValue();
 
     }
 
@@ -182,12 +227,18 @@ public class CalibrateActivity extends AppCompatActivity {
 
     private void fetchPlayers(DataSnapshot dataSnapshot) {
         ArrayList<User> firebaseUsers = new ArrayList<>();
+
         for(DataSnapshot snap : dataSnapshot.getChildren()) {
-            HashMap<Integer, String> userHash = (HashMap<Integer, String>) snap.getValue();
+//            HashMap<Integer, String> userHash = (HashMap<Integer, String>) snap.getValue();
             User user = snap.getValue(User.class);
             //user.name = userHash.get("name");
             user.firebaseId= snap.getKey();
             firebaseUsers.add(user);
+
+            if(user.id.equals(phoneUserId)) {
+                // save the key to our self, so we can be removed from the game in case we close the app
+                userKey = snap.getKey();
+            }
         }
 
         users = firebaseUsers;
@@ -196,7 +247,6 @@ public class CalibrateActivity extends AppCompatActivity {
         numberOfUsersNotCalibrated = totalNumberOfUsers;
         //Start from top to bottom
         currentUser = users.get(totalNumberOfUsers-1);
-
     }
 
     private void showUser(User user) {

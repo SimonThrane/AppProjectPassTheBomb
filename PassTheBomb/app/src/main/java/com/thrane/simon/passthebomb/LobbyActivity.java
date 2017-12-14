@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -170,6 +172,10 @@ public class LobbyActivity extends AppCompatActivity {
                 TextView txtName = v.findViewById(R.id.txtName);
                 txtName.setText(model.name);
                 TextView txtHost = v.findViewById(R.id.txtHost);
+                ImageView imgPlayer = v.findViewById(R.id.imgPlayer);
+                //https://github.com/bumptech/glide
+                Glide.with(getBaseContext()).load(model.photoUri).into(imgPlayer);
+
                 txtHost.setVisibility(View.INVISIBLE);
                 boolean isHost = isHost(model);
                 if(isHost) {

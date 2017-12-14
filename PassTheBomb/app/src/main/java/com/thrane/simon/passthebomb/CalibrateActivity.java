@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -253,6 +254,7 @@ public class CalibrateActivity extends AppCompatActivity {
         if(!phoneUserId.equals(user.id)){
             String descriptionString = getResources().getString(R.string.calibrate_activity_description) + " " + user.name;
             descriptionTxt.setText(descriptionString);
+            Glide.with(this).load(user.photoUri).into(avatarImg);
         }else{
             onAngleUpdated();
         }

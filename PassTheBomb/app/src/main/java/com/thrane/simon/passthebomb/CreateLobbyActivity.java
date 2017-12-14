@@ -112,12 +112,6 @@ public class CreateLobbyActivity extends AppCompatActivity {
 
         User user = new User();
 
-        // DELETE THIS - ONLY FOR TESTING
-//        SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
-//        SharedPreferences.Editor prefsEditor = mPrefs.edit();
-//        prefsEditor.putString("UserName", "Bobby");
-//        prefsEditor.commit();
-
         user.name = mPrefs.getString(Globals.USER_NAME, null);
         user.id = mPrefs.getString(Globals.USER_ID,null);
         user.photoUri = mPrefs.getString(Globals.USER_PHOTO_URI,null);

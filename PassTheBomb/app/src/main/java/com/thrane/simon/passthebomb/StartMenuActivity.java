@@ -66,17 +66,14 @@ public class StartMenuActivity extends AppCompatActivity {
         joinLobbyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (selectedGame != null) {
-//                    Intent LobbyIntent = new Intent(getBaseContext(), LobbyActivity.class);
-//                    startActivity(LobbyIntent);
-//                }
                 Intent JoinLobbyIntent = new Intent(getBaseContext(), JoinLobbyActivity.class);
                 startActivity(JoinLobbyIntent);
             }
         });
         gameAdapter = new FirebaseListAdapter<Game>(options) {
             @Override
-            protected void populateView(View v, Game gameDataItem, int position) {
+                protected void populateView(View v, Game gameDataItem, int position) {
+                if(!gameDataItem.gameStarted){
                 TextView txtLobbyName = v.findViewById(R.id.tvLobbyName);
                 txtLobbyName.setText(gameDataItem.name);
 
@@ -88,6 +85,7 @@ public class StartMenuActivity extends AppCompatActivity {
 
                 TextView txtCategory = v.findViewById(R.id.tvCategoryValue);
                 txtCategory.setText(gameDataItem.category.name);
+            }
             }
         };
         lv = findViewById(R.id.listViewLobby);
@@ -107,7 +105,7 @@ public class StartMenuActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(StartMenuActivity.this, R.style.Theme_AppCompat_Dialog);
                 builder
                         .setTitle(R.string.start_dialog_title)
-                        .setMessage(R.string.start_dialog_message + " " + selectedGame.name + "?")
+                        .setMessage(getResources().getString(R.string.start_dialog_message) + " " + selectedGame.name + "?")
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

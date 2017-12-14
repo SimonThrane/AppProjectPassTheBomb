@@ -68,7 +68,7 @@ public class JoinLobbyActivity extends AppCompatActivity {
                     Game currentGame = snapshot.getValue(Game.class);
                     //HashMap<Integer, String> gameHash = (HashMap<Integer, String>) snapshot.getValue();
                     // if a game with the password is found, add the user to the lobby
-                    if(currentGame.password.equals(password)) {
+                    if(currentGame.password != null && currentGame.password.equals(password)) {
                         String key = snapshot.getKey();
                         List<User> users = snapshot.getValue(Game.class).users;
                         // check if the lobby is full

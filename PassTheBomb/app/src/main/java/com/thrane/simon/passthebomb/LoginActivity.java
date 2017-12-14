@@ -21,16 +21,15 @@ import com.google.gson.Gson;
 import com.thrane.simon.passthebomb.Util.Globals;
 
 public class LoginActivity extends AppCompatActivity {
-    private static final String TAG = "FIREBASE_AUTH";
+    private static final String TAG = "GOOGLE_AUTH";
     private static final int RC_SIGN_IN = 100;
-    private FirebaseAuth mAuth;
+    private static final String DEFAULT_IMAGE_URL = "https://openclipart.org/download/252171/bomb.svg";
     private GoogleSignInClient mGoogleSignInClient;
     private SharedPreferences mPrefs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mAuth = FirebaseAuth.getInstance();
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -47,17 +46,6 @@ public class LoginActivity extends AppCompatActivity {
                 signInWithGoogle();
             }
         });
-
-        findViewById(R.id.facebookBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signInWithFacebook();
-            }
-        });
-    }
-
-    private void signInWithFacebook() {
-
     }
 
     private void signInWithGoogle() {
@@ -68,18 +56,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null)
-            updateUI(currentUser);
         // Check for existing Google Sign In account, if the user is already signed in
-// the GoogleSignInAccount will be non-null.
+        // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null)
-            updateUI(account);
-    }
-
-    private void updateUI(FirebaseUser currentUser) {
+            updateUI();
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
@@ -88,11 +69,10 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Google authenticated succeed",
                     Toast.LENGTH_SHORT).show();
             // Signed in successfully, show authenticated UI.
-            saveUsernameToSharedPreference(account.getDisplayName());
-            saveStringToSharedPrefs(Globals.USER_NAME, account.getDisplayName());
-            saveStringToSharedPrefs(Globals.USER_ID, account.getId());
-            saveStringToSharedPrefs(Globals.USER_PHOTO_URI, account.getPhotoUrl().toString());
-            updateUI(account);
+
+            saveAccountToSharedPrefs(account);
+
+            updateUI();
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -101,40 +81,33 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void savePhotoUri(Uri photoUrl) {
+    private void saveAccountToSharedPrefs(GoogleSignInAccount account) {
         if (mPrefs == null) {
             mPrefs = getSharedPreferences(null,MODE_PRIVATE);
         }
-        SharedPreferences.Editor prefsEditor = mPrefs.edit();
-        prefsEditor.putString(Globals.USER_PHOTO_URI, photoUrl.toString());
-        prefsEditor.commit();
-    }
-
-    private void saveStringToSharedPrefs(String key, String value) {
-        if (mPrefs == null) {
-            mPrefs = getSharedPreferences(null,MODE_PRIVATE);
+        String name = account.getDisplayName();
+        String id = account.getId();
+        String photoUrl;
+        Uri photo = account.getPhotoUrl();
+        if(photo != null) {
+            photoUrl = photo.toString();
+        } else {
+            photoUrl = DEFAULT_IMAGE_URL;
         }
+
         SharedPreferences.Editor prefsEditor = mPrefs.edit();
-        prefsEditor.putString(key, value);
+
+        prefsEditor.putString(Globals.USER_NAME, name);
+        prefsEditor.putString(Globals.USER_ID, id);
+        prefsEditor.putString(Globals.USER_PHOTO_URI, photoUrl);
         prefsEditor.commit();
     }
 
-    private void updateUI(GoogleSignInAccount account) {
-        Intent LobbyListIntent = new Intent(getBaseContext(), StartMenuActivity.class);
-
-        //LobbyListIntent.putExtra("UserAccount", account);
+    private void updateUI() {
+        Intent LobbyListIntent = new Intent(this, StartMenuActivity.class);
         startActivity(LobbyListIntent);
+        finish();
     }
-//https://stackoverflow.com/questions/7145606/how-android-sharedpreferences-save-store-object
-    private void saveUsernameToSharedPreference(String name){
-        if (mPrefs == null) {
-            mPrefs = getSharedPreferences(null,MODE_PRIVATE);
-        }
-        SharedPreferences.Editor prefsEditor = mPrefs.edit();
-        prefsEditor.putString("UserName", name);
-        prefsEditor.commit();
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

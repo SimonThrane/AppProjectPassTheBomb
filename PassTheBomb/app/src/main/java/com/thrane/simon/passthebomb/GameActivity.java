@@ -79,6 +79,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private ValueEventListener bombListener;
     private ValueEventListener gameEndedListener;
     private Boolean initGame = true;
+    private CountDownTimer bombCountDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,9 +145,13 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                     initGame = false;
                 }
                 if(currentGame != null) {
-                    if (currentGame.users.size() > calibratedUsers.size()) {
-                        //TODO: end game
+                    if (currentGame.users.size() < calibratedUsers.size()) {
+                        if(bombCountDownTimer != null){
+                            bombCountDownTimer.cancel();
+                        }
+
                         finish();
+                        return;
                     }
                     if (currentGame.gameEnded) {
                         Context gameContext = getGameContext();
@@ -155,8 +160,13 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                         resultIntent.putExtra(Globals.LOSER, loser.name);
                         startActivity(resultIntent);
                         finish();
+                        return;
                     }
                 }else{
+
+                    if(bombCountDownTimer != null){
+                        bombCountDownTimer.cancel();
+                    }
                     finish();
                 }
 
@@ -320,6 +330,10 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         gameRef.child("bomb").setValue(bomb);
         userRef.getParent().child(user.firebaseId).child("hasBomb").setValue(true);
         userRef.getParent().child(phoneUser.firebaseId).child("hasBomb").setValue(false);
+        bombImageView.setAlpha(0.0f);
+        if(bombCountDownTimer != null){
+            bombCountDownTimer.cancel();
+        }
     }
 
     //Init bomb
@@ -333,7 +347,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
     //Countdown bomb
     private void bombCountdown(Bomb bombToCountdown){
-        new CountDownTimer(bombToCountdown.timeToLive, 1000) {
+        bombCountDownTimer = new CountDownTimer(bombToCountdown.timeToLive, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 bomb.timeToLive = millisUntilFinished;
@@ -419,8 +433,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            //TODO: fix animation
-                            bombImageView.setAlpha(0.0f);
+
                             //Get the current Aplha
                             sensorManager.getRotationMatrix(rotationMatrix, null,
                                     calibrationHelper.accelerometerReading, calibrationHelper.magnetometerReading);

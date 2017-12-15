@@ -23,7 +23,7 @@ import com.thrane.simon.passthebomb.Util.Globals;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "GOOGLE_AUTH";
     private static final int RC_SIGN_IN = 100;
-    private static final String DEFAULT_IMAGE_URL = "https://openclipart.org/download/252171/bomb.svg";
+    private static final String DEFAULT_IMAGE_URL = "https://openclipart.org/download/252171/bomb.png";
     private GoogleSignInClient mGoogleSignInClient;
     private SharedPreferences mPrefs;
     @Override

@@ -73,6 +73,12 @@ public class LobbyActivity extends AppCompatActivity {
         });
 
         sharedPref = getSharedPreferences(null, MODE_PRIVATE);
+        // Init the player list
+        Query query = gamesRef.child(gameKey).child("users");
+        FirebaseListOptions<User> options = new FirebaseListOptions.Builder<User>()
+                .setLayout(R.layout.player_list_item)
+                .setQuery(query, User.class)
+                .build();
         adapter = new FirebaseListAdapter<User>(options) {
             @Override
             protected void populateView(View v, User model, int position) {
@@ -178,12 +184,7 @@ public class LobbyActivity extends AppCompatActivity {
             }
         });
 
-        // Init the player list
-        Query query = gamesRef.child(gameKey).child("users");
-        FirebaseListOptions<User> options = new FirebaseListOptions.Builder<User>()
-                .setLayout(R.layout.player_list_item)
-                .setQuery(query, User.class)
-                .build();
+
 
 
     }

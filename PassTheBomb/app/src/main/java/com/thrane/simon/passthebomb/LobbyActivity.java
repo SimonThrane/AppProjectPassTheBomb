@@ -41,6 +41,10 @@ public class LobbyActivity extends AppCompatActivity {
     private Game gameSnapshot;
     private ValueEventListener gameStartedListener;
     private FirebaseListAdapter<User> adapter;
+    private Query query;
+    private ValueEventListener leaveLobbyListener;
+    private ValueEventListener gameKeyListener;
+    private ValueEventListener gameListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +102,7 @@ public class LobbyActivity extends AppCompatActivity {
         };
 
         // Get game info once
-        gamesRef.child(gameKey).addListenerForSingleValueEvent(new ValueEventListener() {
+        gameListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 gameSnapshot = dataSnapshot.getValue(Game.class);
@@ -146,7 +150,8 @@ public class LobbyActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        gamesRef.child(gameKey).addListenerForSingleValueEvent(gameListener);
 
         gameStartedListener = new ValueEventListener() {
             @Override
@@ -168,9 +173,7 @@ public class LobbyActivity extends AppCompatActivity {
             }
         };
         gamesRef.child(gameKey).child("gameStarted").addValueEventListener(gameStartedListener);
-
-        // if game stops existing, leave the lobby
-        gamesRef.child(gameKey).addValueEventListener(new ValueEventListener() {
+        gameKeyListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists()) {
@@ -182,7 +185,9 @@ public class LobbyActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        // if game stops existing, leave the lobby
+        gamesRef.child(gameKey).addValueEventListener(gameKeyListener);
 
 
 
@@ -207,6 +212,9 @@ public class LobbyActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         gamesRef.removeEventListener(gameStartedListener);
+        query.removeEventListener(leaveLobbyListener);
+        gamesRef.removeEventListener(gameKeyListener);
+        gamesRef.removeEventListener(gameListener);
     }
 
     @Override
@@ -221,13 +229,12 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     public void leaveLobby() {
-        Query query = gamesRef
+        query = gamesRef
                 .child(gameKey)
                 .child("users")
                 .orderByChild("id")
                 .equalTo(currentUser.id);
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        leaveLobbyListener = new ValueEventListener(){
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -243,6 +250,8 @@ public class LobbyActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        query.addListenerForSingleValueEvent(leaveLobbyListener);
     }
 }
+

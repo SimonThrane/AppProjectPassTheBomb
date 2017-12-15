@@ -40,6 +40,7 @@ public class LobbyActivity extends AppCompatActivity {
     private User currentUser;
     private Game gameSnapshot;
     private ValueEventListener gameStartedListener;
+    private FirebaseListAdapter<User> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,23 @@ public class LobbyActivity extends AppCompatActivity {
         });
 
         sharedPref = getSharedPreferences(null, MODE_PRIVATE);
+        adapter = new FirebaseListAdapter<User>(options) {
+            @Override
+            protected void populateView(View v, User model, int position) {
+                TextView txtName = v.findViewById(R.id.txtName);
+                txtName.setText(model.name);
+                TextView txtHost = v.findViewById(R.id.txtHost);
+                ImageView imgPlayer = v.findViewById(R.id.imgPlayer);
+                //https://github.com/bumptech/glide
+                Glide.with(getBaseContext()).load(model.photoUri).into(imgPlayer);
+
+                txtHost.setVisibility(View.INVISIBLE);
+                boolean isHost = isHost(model);
+                if(isHost) {
+                    txtHost.setVisibility(View.VISIBLE);
+                }
+            }
+        };
 
         // Get game info once
         gamesRef.child(gameKey).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -81,7 +99,8 @@ public class LobbyActivity extends AppCompatActivity {
                 txtTriviaCategory.setText(gameSnapshot.category.name);
                 txtTriviaDifficulty.setText(gameSnapshot.difficulty);
                 txtGameName.setText(gameSnapshot.name);
-
+                adapter.startListening();
+                lvPlayers.setAdapter(adapter);
                 // If the game has a password, show it
                 if(gameSnapshot.password != null) {
                     txtPasswordTitle.setVisibility(View.VISIBLE);
@@ -166,26 +185,7 @@ public class LobbyActivity extends AppCompatActivity {
                 .setQuery(query, User.class)
                 .build();
 
-        FirebaseListAdapter<User> adapter = new FirebaseListAdapter<User>(options) {
-            @Override
-            protected void populateView(View v, User model, int position) {
-                TextView txtName = v.findViewById(R.id.txtName);
-                txtName.setText(model.name);
-                TextView txtHost = v.findViewById(R.id.txtHost);
-                ImageView imgPlayer = v.findViewById(R.id.imgPlayer);
-                //https://github.com/bumptech/glide
-                Glide.with(getBaseContext()).load(model.photoUri).into(imgPlayer);
 
-                txtHost.setVisibility(View.INVISIBLE);
-                boolean isHost = isHost(model);
-                if(isHost) {
-                    txtHost.setVisibility(View.VISIBLE);
-                }
-            }
-        };
-
-        adapter.startListening();
-        lvPlayers.setAdapter(adapter);
     }
 
     private void startCalibrateActivity() {

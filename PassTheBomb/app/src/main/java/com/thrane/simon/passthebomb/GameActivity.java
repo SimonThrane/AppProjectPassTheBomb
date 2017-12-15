@@ -132,8 +132,8 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                     return;
                 }
 
-                currentGame = dataSnapshot.getValue(Game.class);
                 if(currentGame != null) {
+                    currentGame = dataSnapshot.getValue(Game.class);
                     if (currentGame.users.size() < calibratedUsers.size()) {
                         finish();
                         return;

@@ -252,6 +252,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         gameRef.removeEventListener(firstGameListener);
         userRef.removeEventListener(userListener);
         bombRef.removeEventListener(bombListener);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(questionsReciever);
     }
 
     @Override

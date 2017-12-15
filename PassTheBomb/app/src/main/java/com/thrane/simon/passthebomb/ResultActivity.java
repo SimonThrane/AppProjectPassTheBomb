@@ -26,6 +26,7 @@ public class ResultActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent startMenuIntent = new Intent(getBaseContext(), StartMenuActivity.class);
                 startActivity(startMenuIntent);
+                finish();
             }
         });
 

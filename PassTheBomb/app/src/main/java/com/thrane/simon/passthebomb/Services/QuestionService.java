@@ -2,6 +2,7 @@ package com.thrane.simon.passthebomb.Services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -57,7 +58,7 @@ public class QuestionService extends Service {
         } else {
             broadcastErrorResult();
         }
-        
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -148,13 +149,7 @@ public class QuestionService extends Service {
 
     //Check connectivity by using google INetAddress, inspired from: https://stackoverflow.com/questions/9570237/android-check-internet-connection
     public boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("google.com"); //You can replace it with your name
-            return !ipAddr.equals("");
-
-        } catch (Exception e) {
-            return false;
-        }
-
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }

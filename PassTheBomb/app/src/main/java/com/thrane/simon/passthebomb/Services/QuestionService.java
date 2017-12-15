@@ -3,6 +3,7 @@ package com.thrane.simon.passthebomb.Services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -20,6 +21,7 @@ import com.thrane.simon.passthebomb.Models.QuestionApiResponse.Result;
 import com.thrane.simon.passthebomb.Util.Globals;
 
 import java.lang.reflect.Type;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -50,7 +52,12 @@ public class QuestionService extends Service {
         int category = intent.getIntExtra(Globals.QUESTION_CATEGORY,21);
         String difficulty = intent.getStringExtra(Globals.QUESTION_DIFFICULTY);
 
-        this.getQuestions(category, amountOfQuestions, difficulty);
+        if(isInternetAvailable()) {
+            this.getQuestions(category, amountOfQuestions, difficulty);
+        } else {
+            broadcastErrorResult();
+        }
+        
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -93,6 +100,14 @@ public class QuestionService extends Service {
 
     }
 
+    private void broadcastErrorResult() {
+        Intent questionsIntent = new Intent(Globals.QUESTION_EVENT);
+        //Empty array means no internet
+        questionsIntent.putParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA,new ArrayList<Question>());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(questionsIntent);
+        stopSelf();
+    }
+
     private void broadcastResult(String response) {
         Log.d("response is good:", response);
         questions = responseObjToQuestionList(jsonToPojo(response));
@@ -129,5 +144,17 @@ public class QuestionService extends Service {
         }
 
         return questionList;
+    }
+
+    //Check connectivity by using google INetAddress, inspired from: https://stackoverflow.com/questions/9570237/android-check-internet-connection
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com"); //You can replace it with your name
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 }

@@ -212,7 +212,6 @@ public class LobbyActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         gamesRef.removeEventListener(gameStartedListener);
-        query.removeEventListener(leaveLobbyListener);
         gamesRef.removeEventListener(gameKeyListener);
         gamesRef.removeEventListener(gameListener);
     }

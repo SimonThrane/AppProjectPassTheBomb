@@ -24,8 +24,6 @@ public class ResultActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent startMenuIntent = new Intent(getBaseContext(), StartMenuActivity.class);
-                startActivity(startMenuIntent);
                 finish();
             }
         });

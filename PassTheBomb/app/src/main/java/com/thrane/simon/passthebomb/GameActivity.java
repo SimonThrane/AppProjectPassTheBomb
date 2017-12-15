@@ -113,10 +113,11 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         questionsReciever = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                loadingDialog.dismiss();
                 //Start game when questions is ready
                 allQuestions = intent.getParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA);
                 gameSetup();
+                passBombToRandomUser();
+                loadingDialog.dismiss();
             }
         };
 
@@ -132,19 +133,10 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                     finish();
                     return;
                 }
-                currentGame = dataSnapshot.getValue(Game.class);
-                if(initGame){
-                    StartQuestionService(currentGame.category.id, currentGame.difficulty);
-                    host = currentGame.host;
-                    passBombToRandomUser();
-                    initGame = false;
-                }
-                if(currentGame != null) {
-                    if (currentGame.users.size() < calibratedUsers.size()) {
-                        if(bombCountDownTimer != null){
-                            bombCountDownTimer.cancel();
-                        }
 
+                if(currentGame != null) {
+                    currentGame = dataSnapshot.getValue(Game.class);
+                    if (currentGame.users.size() < calibratedUsers.size()) {
                         finish();
                         return;
                     }
@@ -157,11 +149,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                         finish();
                         return;
                     }
-                }else{
-                    if(bombCountDownTimer != null){
-                        bombCountDownTimer.cancel();
-                    }
-                    finish();
                 }
             }
 
@@ -170,10 +157,24 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
             }
         };
-        gameRef.addValueEventListener(gameListener);
+
+        ValueEventListener firstGameListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                currentGame = dataSnapshot.getValue(Game.class);
+                host = currentGame.host;
+                startQuestionService(currentGame.category.id,currentGame.difficulty);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        gameRef.addListenerForSingleValueEvent(firstGameListener);
     }
 
-    private void StartQuestionService(int category, String difficulty) {
+    private void startQuestionService(int category, String difficulty) {
         //Start questionService
         Intent questionIntent = new Intent(this, QuestionService.class);
         questionIntent.putExtra(Globals.QUESTION_CATEGORY, category);
@@ -228,6 +229,8 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
         //Setup listener
         bombImageView.setOnTouchListener(new OnBombTouchListener());
+
+        gameRef.addValueEventListener(gameListener);
     }
 
     @Override

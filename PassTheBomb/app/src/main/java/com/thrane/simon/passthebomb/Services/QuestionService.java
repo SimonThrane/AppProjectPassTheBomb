@@ -53,7 +53,7 @@ public class QuestionService extends Service {
         if(mQueue == null) {
             mQueue = Volley.newRequestQueue(this);
         }
-        String url = mBaseUrl + "?amount=" + amount + "&category=" + category + "&difficulty=" + difficulty + "&type=multiple";
+        String url = mBaseUrl + "?amount=" + amount + "&category=" + category + "&difficulty=" + difficulty.toLowerCase() + "&type=multiple";
 
 
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {

@@ -114,6 +114,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             public void onReceive(Context context, Intent intent) {
                 //Start game when questions is ready
                 allQuestions = intent.getParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA);
+
                 gameSetup();
                 passBombToRandomUser();
                 loadingDialog.dismiss();
@@ -382,9 +383,12 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private void getRandomQuestion(){
 
         Random randomizer = new Random();
-        Question randomQuestion = allQuestions.get(randomizer.nextInt(allQuestions.size()));
-        qFrag = QuestionDialogFragment.newInstance(randomQuestion);
-        qFrag.show(fm,"FragmentTest");
+        if(allQuestions.size() > 0){
+            Question randomQuestion = allQuestions.get(randomizer.nextInt(allQuestions.size()));
+            qFrag = QuestionDialogFragment.newInstance(randomQuestion);
+            qFrag.show(fm,"FragmentTest");
+        }
+
     }
 
     //Listing on bomb touch

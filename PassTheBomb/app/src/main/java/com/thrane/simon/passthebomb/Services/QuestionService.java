@@ -35,6 +35,11 @@ public class QuestionService extends Service {
     }
 
     @Override
+    public void onDestroy(){
+        super.onDestroy();
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
@@ -53,7 +58,7 @@ public class QuestionService extends Service {
         if(mQueue == null) {
             mQueue = Volley.newRequestQueue(this);
         }
-        String url = mBaseUrl + "?amount=" + amount + "&category=" + category + "&difficulty=" + difficulty.toLowerCase() + "&type=multiple";
+        String url = mBaseUrl + "?amount=" + amount + "&category=" + category + "&difficulty=" + getEnglishDifficultyTranslation(difficulty.toLowerCase()) + "&type=multiple";
 
 
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -69,6 +74,23 @@ public class QuestionService extends Service {
         });
 
         mQueue.add(request);
+    }
+
+    private String getEnglishDifficultyTranslation(String diff){
+        String difficulty = diff;
+        switch (diff){
+            case "let":
+                difficulty = "easy";
+                break;
+            case "svær":
+                difficulty = "hard";
+                break;
+            case "medium":
+                difficulty = "medium";
+                break;
+        }
+        return difficulty;
+
     }
 
     private void broadcastResult(String response) {

@@ -42,7 +42,10 @@ public class QuestionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        this.getQuestions(21, amountOfQuestions, "medium");
+        int category = intent.getIntExtra(Globals.QUESTION_CATEGORY,21);
+        String difficulty = intent.getStringExtra(Globals.QUESTION_DIFFICULTY);
+
+        this.getQuestions(category, amountOfQuestions, difficulty);
         return super.onStartCommand(intent, flags, startId);
     }
 

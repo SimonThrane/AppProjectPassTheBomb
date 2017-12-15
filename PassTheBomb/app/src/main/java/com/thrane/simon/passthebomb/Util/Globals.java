@@ -14,4 +14,7 @@ public class Globals {
     public static final String USER_ID = "USER_ID";
     public static final String USER_PHOTO_URI = "USER_PHOTO_URI";
     public static final String USER_NAME = "USER_NAME";
+    public static final String QUESTION_CATEGORY = "QUESTION_CATEGORY";
+    public static final String QUESTION_DIFFICULTY = "QUESTION_DIFFICULTY";
+
 }

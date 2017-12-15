@@ -66,7 +66,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private final float[] orientationAngles = new float[3];
     private User phoneUser;
     private String gameId;
-    private Game game;
+    private Game currentGame;
     private Bomb bomb= new Bomb();
     private User host;
     private FragmentManager fm;
@@ -86,44 +86,17 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        //Fragment setup
-        fm = getSupportFragmentManager();
-
-        //Make getting data ready dialog here
-        loadingDialog = LoadingDialogFragment.newInstance();
-        loadingDialog.show(fm,"Test");
-
-        //Register reciever
-        questionsReciever = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                loadingDialog.dismiss();
-                //Start game when questions is ready
-                allQuestions = intent.getParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA);
-                gameSetup();
-            }
-        };
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(questionsReciever, new IntentFilter(Globals.QUESTION_EVENT));
-
-        //Start questionService
-        Intent questionIntent = new Intent(this, QuestionService.class);
-        startService(questionIntent);
-    }
-
-    private void gameSetup() {
         //Get Intent from calibration
         Intent intent = getIntent();
         gameId = intent.getStringExtra(Globals.GAME_KEY);
         calibratedUsers = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
+
         SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
         phoneUserId  = mPrefs.getString(Globals.USER_ID,"DEFAULT" );
         setPhoneUser();
-        //gameId ="-L-koVti07m6lQ9xU3f8";
-        database = FirebaseDatabase.getInstance();
-
         //TODO: Get phoneUser from sharedPrefs
 
+        database = FirebaseDatabase.getInstance();
         // get database references
         gameRef = database.getReference("Games/"+gameId);
         bombRef = database.getReference("Games/"+gameId+"/bomb");
@@ -133,13 +106,15 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         gameListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 if(!dataSnapshot.exists()) {
                     // game does not exist anymore, finish game activity
                     finish();
                     return;
                 }
-                Game currentGame = dataSnapshot.getValue(Game.class);
+                currentGame = dataSnapshot.getValue(Game.class);
                 if(initGame){
+                    StartQuestionService(currentGame.category.id, currentGame.difficulty);
                     host = currentGame.host;
                     passBombToRandomUser();
                     initGame = false;
@@ -163,13 +138,11 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                         return;
                     }
                 }else{
-
                     if(bombCountDownTimer != null){
                         bombCountDownTimer.cancel();
                     }
                     finish();
                 }
-
             }
 
             @Override
@@ -179,6 +152,38 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         };
         gameRef.addValueEventListener(gameListener);
 
+
+        //Fragment setup
+        fm = getSupportFragmentManager();
+
+        //Make getting data ready dialog here
+        loadingDialog = LoadingDialogFragment.newInstance();
+        loadingDialog.show(fm,"Test");
+
+
+        //Register reciever
+        questionsReciever = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                loadingDialog.dismiss();
+                //Start game when questions is ready
+                allQuestions = intent.getParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA);
+                gameSetup();
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(questionsReciever, new IntentFilter(Globals.QUESTION_EVENT));
+    }
+
+    private void StartQuestionService(int category, String difficulty) {
+        //Start questionService
+        Intent questionIntent = new Intent(this, QuestionService.class);
+        questionIntent.putExtra(Globals.QUESTION_CATEGORY, category);
+        questionIntent.putExtra(Globals.QUESTION_DIFFICULTY, difficulty);
+        startService(questionIntent);
+    }
+
+    private void gameSetup() {
         bombListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

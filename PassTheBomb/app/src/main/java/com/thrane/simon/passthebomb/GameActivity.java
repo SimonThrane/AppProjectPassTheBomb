@@ -86,13 +86,20 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        //Fragment setup
+        fm = getSupportFragmentManager();
+
+        //Make getting data ready dialog here
+        loadingDialog = LoadingDialogFragment.newInstance();
+        loadingDialog.show(fm,"Test");
+
         //Get Intent from calibration
         Intent intent = getIntent();
         gameId = intent.getStringExtra(Globals.GAME_KEY);
         calibratedUsers = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
 
         SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
-        phoneUserId  = mPrefs.getString(Globals.USER_ID,"DEFAULT" );
+        phoneUserId  = mPrefs.getString(Globals.USER_ID,null );
         setPhoneUser();
         //TODO: Get phoneUser from sharedPrefs
 
@@ -101,6 +108,19 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         gameRef = database.getReference("Games/"+gameId);
         bombRef = database.getReference("Games/"+gameId+"/bomb");
         userRef = database.getReference("Games/"+gameId+"/users/"+phoneUser.firebaseId);
+
+        //Register reciever
+        questionsReciever = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                loadingDialog.dismiss();
+                //Start game when questions is ready
+                allQuestions = intent.getParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA);
+                gameSetup();
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(questionsReciever, new IntentFilter(Globals.QUESTION_EVENT));
 
         // create listeners and add them to the references
         gameListener = new ValueEventListener() {
@@ -151,28 +171,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             }
         };
         gameRef.addValueEventListener(gameListener);
-
-
-        //Fragment setup
-        fm = getSupportFragmentManager();
-
-        //Make getting data ready dialog here
-        loadingDialog = LoadingDialogFragment.newInstance();
-        loadingDialog.show(fm,"Test");
-
-
-        //Register reciever
-        questionsReciever = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                loadingDialog.dismiss();
-                //Start game when questions is ready
-                allQuestions = intent.getParcelableArrayListExtra(Globals.QUESTION_EVENT_DATA);
-                gameSetup();
-            }
-        };
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(questionsReciever, new IntentFilter(Globals.QUESTION_EVENT));
     }
 
     private void StartQuestionService(int category, String difficulty) {

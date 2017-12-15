@@ -78,6 +78,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private ValueEventListener userListener;
     private ValueEventListener bombListener;
     private CountDownTimer bombCountDownTimer;
+    private ValueEventListener firstGameListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +158,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             }
         };
 
-        ValueEventListener firstGameListener = new ValueEventListener() {
+        firstGameListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 currentGame = dataSnapshot.getValue(Game.class);
@@ -233,6 +234,12 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(calibrationHelper);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         if(bombCountDownTimer != null){
@@ -242,6 +249,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             gameRef.removeValue();
         }
         gameRef.removeEventListener(gameListener);
+        gameRef.removeEventListener(firstGameListener);
         userRef.removeEventListener(userListener);
         bombRef.removeEventListener(bombListener);
     }

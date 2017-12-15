@@ -141,9 +141,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                 }
                 if(currentGame != null) {
                     if (currentGame.users.size() < calibratedUsers.size()) {
-                        if(bombCountDownTimer != null){
-                            bombCountDownTimer.cancel();
-                        }
 
                         finish();
                         return;
@@ -154,13 +151,12 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                         Intent resultIntent = new Intent(gameContext, ResultActivity.class);
                         resultIntent.putExtra(Globals.LOSER, loser.name);
                         startActivity(resultIntent);
+
                         finish();
                         return;
                     }
                 }else{
-                    if(bombCountDownTimer != null){
-                        bombCountDownTimer.cancel();
-                    }
+
                     finish();
                 }
             }
@@ -233,6 +229,9 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     @Override
     protected void onStop() {
         super.onStop();
+        if(bombCountDownTimer != null){
+            bombCountDownTimer.cancel();
+        }
         if(isHost(phoneUser)){
             gameRef.removeValue();
         }
@@ -307,7 +306,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         nearestUser.name = "dummy";
         nearestUser.angleAlpha = 100;
         for(User user : calibratedUsers){
-            if(phoneUserId != user.id && abs(user.angleAlpha-coor) < abs(nearestUser.angleAlpha-coor)){
+            if(!phoneUserId.equals(user.id )&& abs(user.angleAlpha-coor) < 0.7853981634 && abs(user.angleAlpha-coor) < abs(nearestUser.angleAlpha-coor)){
                 nearestUser = user;
             }
         }

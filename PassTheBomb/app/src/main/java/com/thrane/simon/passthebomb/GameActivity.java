@@ -77,8 +77,6 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private ValueEventListener gameListener;
     private ValueEventListener userListener;
     private ValueEventListener bombListener;
-    private ValueEventListener gameEndedListener;
-    private Boolean initGame = true;
     private CountDownTimer bombCountDownTimer;
 
     @Override
@@ -339,8 +337,8 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     private void initBomb(){
         bomb = new Bomb();
         Random rand = new Random();
-        long upper = 60000;
-        long lower = 30000;
+        long upper = 40000;
+        long lower = 20000;
         bomb.timeToLive = lower +(long)(rand.nextDouble()*(upper - lower));
     }
 

@@ -42,8 +42,6 @@ public class CreateLobbyActivity extends AppCompatActivity {
 
     SharedPreferences mPrefs;
 
-//    final String categories[] = {"General knowledge", "Books", "Film", "Music", "Musicals and theatres", "Television", "Video games", "Science and nature", "Computers", "Mathematics", "Mythology", "Sports", "Geography", "History", "Politics", "Art", "Celebrities", "Animals", "Vehicles", "Comics", "Gadgets", "Anime and manga", "Cartoon and animations"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +68,6 @@ public class CreateLobbyActivity extends AppCompatActivity {
         rgDifficulty = findViewById(R.id.rgDifficulty);
 
         nbCategory = findViewById(R.id.nbCategory);
-//        configureCategoryPicker();
 
         mCategories = new ArrayList<>();
 
@@ -125,7 +122,6 @@ public class CreateLobbyActivity extends AppCompatActivity {
         }
         game.name = edtGameName.getText().toString();
 
-//        gamesRef.push().setValue(game);
         String gameKey = gamesRef.push().getKey();
         gamesRef.child(gameKey).setValue(game);
 
@@ -146,12 +142,6 @@ public class CreateLobbyActivity extends AppCompatActivity {
         nbCategory.setDisplayedValues(categoryNames);
         nbCategory.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         nbCategory.setValue(0);
-//        NumberPicker.OnValueChangeListener catChangedListener = new NumberPicker.OnValueChangeListener() {
-//            @Override
-//            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-//
-//            }
-//        }
     }
     // inspired from https://stackoverflow.com/questions/41107/how-to-generate-a-random-alpha-numeric-string/157202#157202
     private String generatePassword() {

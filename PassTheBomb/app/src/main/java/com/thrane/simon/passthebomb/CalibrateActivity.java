@@ -200,9 +200,6 @@ public class CalibrateActivity extends AppCompatActivity {
         gameRef.removeEventListener(gameListener);
         gameRef.removeEventListener(userListenerOnce);
         Log.d("CalibrateActivity", "onStop");
-//        if(!finishedOnPurpose) {
-//            database.getReference("Games/" + gameId + "/users/" + userKey).removeValue();
-//        }
     }
 
     @Override
@@ -230,9 +227,7 @@ public class CalibrateActivity extends AppCompatActivity {
         ArrayList<User> firebaseUsers = new ArrayList<>();
 
         for(DataSnapshot snap : dataSnapshot.getChildren()) {
-//            HashMap<Integer, String> userHash = (HashMap<Integer, String>) snap.getValue();
             User user = snap.getValue(User.class);
-            //user.name = userHash.get("name");
             user.firebaseId= snap.getKey();
             firebaseUsers.add(user);
 

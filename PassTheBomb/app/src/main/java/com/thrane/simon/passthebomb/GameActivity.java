@@ -97,13 +97,14 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         gameId = intent.getStringExtra(Globals.GAME_KEY);
         calibratedUsers = intent.getParcelableArrayListExtra(Globals.CALIBRATED_USERS);
 
+        //Get phoneUser from sharedPrefs
         SharedPreferences mPrefs = getSharedPreferences(null,MODE_PRIVATE);
         phoneUserId  = mPrefs.getString(Globals.USER_ID,null );
         setPhoneUser();
-        //TODO: Get phoneUser from sharedPrefs
 
-        database = FirebaseDatabase.getInstance();
+
         // get database references
+        database = FirebaseDatabase.getInstance();
         gameRef = database.getReference("Games/"+gameId);
         bombRef = database.getReference("Games/"+gameId+"/bomb");
         userRef = database.getReference("Games/"+gameId+"/users/"+phoneUser.firebaseId);
@@ -124,6 +125,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         LocalBroadcastManager.getInstance(this).registerReceiver(questionsReciever, new IntentFilter(Globals.QUESTION_EVENT));
 
         // create listeners and add them to the references
+        //Listen to game
         gameListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -136,10 +138,12 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
 
                 if(currentGame != null) {
                     currentGame = dataSnapshot.getValue(Game.class);
+                    //Check if a user leaves the game
                     if (currentGame.users.size() < calibratedUsers.size()) {
                         finish();
                         return;
                     }
+                    //Find loser and go to Result when game is ended
                     if (currentGame.gameEnded) {
                         Context gameContext = getGameContext();
                         User loser = findLoser(currentGame.users);
@@ -159,6 +163,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             }
         };
 
+        //Single listener to setup the game
         firstGameListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -198,6 +203,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             }
         };
 
+        //Listen to phoneUser
         userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -243,12 +249,15 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     @Override
     protected void onStop() {
         super.onStop();
+        //Cancel the bomb timer
         if(bombCountDownTimer != null){
             bombCountDownTimer.cancel();
         }
+        //If the host leave the game, delete the game
         if(isHost(phoneUser)){
             gameRef.removeValue();
         }
+        //unsubribe listeners
         gameRef.removeEventListener(gameListener);
         gameRef.removeEventListener(firstGameListener);
         userRef.removeEventListener(userListener);
@@ -316,16 +325,19 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         }
     }
 
+
     private void calculateNearestUser(float coor){
 
         User nearestUser = new User();
         nearestUser.name = "dummy";
         nearestUser.angleAlpha = 100;
         for(User user : calibratedUsers){
+            //find nearest user, in a 90 degress span
             if(!phoneUserId.equals(user.id )&& abs(user.angleAlpha-coor) < 0.7853981634 && abs(user.angleAlpha-coor) < abs(nearestUser.angleAlpha-coor)){
                 nearestUser = user;
             }
         }
+
         if(!phoneUser.id.equals(nearestUser.id) && nearestUser.name != "dummy"){
             passBombToPlayer(nearestUser);
         }
@@ -353,13 +365,17 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     }
 
     //Countdown bomb
+    //https://developer.android.com/reference/android/os/CountDownTimer.html
+    //https://stackoverflow.com/questions/10032003/how-to-make-a-countdown-timer-in-android
     private void bombCountdown(Bomb bombToCountdown){
         bombCountDownTimer = new CountDownTimer(bombToCountdown.timeToLive, 1000) {
 
+            //The user with the bomb count down
             public void onTick(long millisUntilFinished) {
                 bomb.timeToLive = millisUntilFinished;
             }
 
+            //Set gameEnded when timer runs out
             public void onFinish() {
                 gameRef.child("gameEnded").setValue(true);
             }
@@ -372,6 +388,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
         qFrag.dismiss();
     }
 
+    //Keep asking questions on wrong answer
     @Override
     public void onQuestionWrongAnswer() {
         Log.d("WrongAnswer", "Wrong answer");
@@ -392,6 +409,8 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
     }
 
     //Listing on bomb touch
+    //https://developer.android.com/reference/android/view/GestureDetector.OnGestureListener.html
+    //https://stackoverflow.com/questions/13095494/how-to-detect-swipe-direction-between-left-right-and-up-down
     public class OnBombTouchListener implements View.OnTouchListener {
         private Context context;
 
@@ -410,6 +429,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, final float velocityX, float velocityY) {
 
+                //Give the player a punishment question
                 if(!phoneUser.hasBomb){
                     getRandomQuestion();
                     return false;
@@ -429,6 +449,7 @@ public class GameActivity extends AppCompatActivity implements QuestionDialogFra
                 double rad = Math.atan2(deltaY, deltaX);
                 double deg = rad * (180 / Math.PI);
 
+                //Check if the swipe, was upwards, to eliminate down/sideway swipes
                 if(deg < -45 && deg> -135 && y2< 0) {
 
                     //Animation setup

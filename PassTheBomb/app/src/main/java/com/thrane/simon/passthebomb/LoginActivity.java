@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.thrane.simon.passthebomb.Util.Globals;
 
+//Denne klasse er stærkt inspireret af: https://firebase.google.com/docs/auth/android/google-signin
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "GOOGLE_AUTH";
     private static final int RC_SIGN_IN = 100;
@@ -83,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    //https://developer.android.com/training/data-storage/shared-preferences.html
     private void saveAccountToSharedPrefs(GoogleSignInAccount account) {
         if (mPrefs == null) {
             mPrefs = getSharedPreferences(null,MODE_PRIVATE);

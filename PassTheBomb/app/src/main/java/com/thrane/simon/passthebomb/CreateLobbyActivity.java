@@ -130,6 +130,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
         startActivity(lobbyIntent);
     }
 
+    // inspired from https://stackoverflow.com/questions/33442035/how-to-make-custom-android-string-picker-that-fits-inside-another-view
     private void configureCategoryPicker(ArrayList<Category> categories) {
         nbCategory.setMinValue(0);
         nbCategory.setMaxValue(categories.size() - 1);
@@ -157,5 +158,3 @@ public class CreateLobbyActivity extends AppCompatActivity {
     }
 }
 
-// dont delete pls, need dis
-// https://stackoverflow.com/questions/33442035/how-to-make-custom-android-string-picker-that-fits-inside-another-view

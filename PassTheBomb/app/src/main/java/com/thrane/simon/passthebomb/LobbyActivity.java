@@ -79,6 +79,7 @@ public class LobbyActivity extends AppCompatActivity {
         sharedPref = getSharedPreferences(null, MODE_PRIVATE);
         // Init the player list
         Query query = gamesRef.child(gameKey).child("users");
+        //https://github.com/firebase/FirebaseUI-Android/blob/master/database/src/main/java/com/firebase/ui/database/FirebaseListAdapter.java
         FirebaseListOptions<User> options = new FirebaseListOptions.Builder<User>()
                 .setLayout(R.layout.player_list_item)
                 .setQuery(query, User.class)
@@ -188,9 +189,6 @@ public class LobbyActivity extends AppCompatActivity {
         };
         // if game stops existing, leave the lobby
         gamesRef.child(gameKey).addValueEventListener(gameKeyListener);
-
-
-
 
     }
 

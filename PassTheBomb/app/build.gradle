@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         passTheBomb {
-            keyAlias 'PassTheBomb'
-            keyPassword 'StoreCenterNord'
-            storeFile file('C:/AndroidProjects/BombProject/keystore.jks')
-            storePassword 'StoreCenterNord'
+            keyAlias 'BombGame'
+            keyPassword 'gruppe5'
+            storeFile file('C:/AndroidProjects/BombProject/AppProjectPassTheBomb/keystore.jks')
+            storePassword 'gruppe5'
         }
     }
     compileSdkVersion 26
